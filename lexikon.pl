@@ -1,0 +1,1 @@
+lex(ist, verb).
