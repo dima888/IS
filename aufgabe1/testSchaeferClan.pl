@@ -38,7 +38,7 @@ test(uncle_false, [fail]) :- uncle(jakob, lidia).
 
 :-begin_tests(aunt).
 test(aunt_from) :- findall(X, aunt(maria, X), Result), assertion(Result == [victoria, vironica, christina, anatoli_2, swetlana, dima, alexander,
-									  tatjana, waldimar_2, natalie_2]).
+tatjana, waldimar_2, natalie_2]).
 test(aunt_true) :- aunt(maria, dima), !.
 test(aunt_false, [fail]) :- aunt(maria, robo).
 :-end_tests(aunt).
@@ -53,4 +53,15 @@ test(sister_from) :- findall(X, sister(swetlana, X), Result), assertion(Result =
 test(sister_false) :- findall(_X, sister(dima, swetlana), Result), assertion(Result == []).
 :-end_tests(sister).
 
+
+
+:-begin_tests(schwippschwapp).
+test(schippschwager_true):- schwippschwapp(eugen, sergej_1), !.
+test(schwippschwager_false, [fail]) :- schwippschwapp(eugen, huma).
+test(schwippschwager_all) :- findall(X, schwippschwapp(eugen, X), Result),
+assertion(Result == [lena, waldimar_1, sergej_1]).
+:-end_tests(schwippschwapp).
+
+
 % Run Test -> run_tests(brother).
+%
