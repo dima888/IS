@@ -1,5 +1,4 @@
 %% Familienstammbaum einbinden
-:-consult('../aufgabe1/schaeferClan.pl').
 :-consult('../lexikon.pl').
 
 % wiki bespiel
@@ -13,50 +12,42 @@
 % verb --> [eats].
 % kuh --> [kuh].
 
-%%	 DAS SIND HARD CODIERTE FRAGEN ZUM TESTEN FUER UNS
-frage([Interrogativpronomen, Verb, Artikel, Nomen, Praeposition, Eigenname]) :-
-	        ergaenzungsfragen(Nomen, Eigenname, [Interrogativpronomen, Verb, Artikel, Nomen, Praeposition, Eigenname], []),
-		uncle(Nomen, Eigenname).
-
-frage([Interrogativpronomen, Verb, Nomen, Praeposition, Eigenname]) :-
-		ergaenzungsfragen(Nomen, Eigenname, [Interrogativpronomen, Verb, Nomen, Praeposition, Eigenname], []),
-		uncle(Nomen, Eigenname).
-
-frage([Verb, Eigenname_1, Artikel, Nomen, Praeposition, Eigenname_2]) :-
-	entscheidungsfragen(Eigenname_1, Nomen, Eigenname_2, [Verb, Eigenname_1, Artikel, Nomen, Praeposition, Eigenname_2], []),
-	aunt(Eigenname_1, Eigenname_2).
 
 %%	[wer,ist,der,onkel,von,kevin] v [wer,ist,onkel,von,kevin]
-s(Semantik, Struktur, [Interrogativpronomen, Verb, Artikel, Nomen, Praeposition, Eigenname], []) :-
-	 ergaenzungsfragen(Nomen, Eigenname, [Interrogativpronomen, Verb, Artikel, Nomen, Praeposition, Eigenname], []),
-	 uncle(Onkel, Eigenname),
-	 Semantik = uncle(Onkel, Eigenname),
-	 is(Struktur, 7*7).
+% s(Semantik, Struktur, [Interrogativpronomen, Verb, Artikel, Nomen, Praeposition, Eigenname], []) :-
+%	 ergaenzungsfragen(_SemantikVerb, _SemantikNominalphrase,
+%	 _SemantikPraepositionphrase, _SemantikEigenname,
+%	 [Interrogativpronomen, Verb, Artikel, Nomen, Praeposition,
+%	 Eigenname], []),
+%	 uncle(Onkel, Eigenname),
+%	 Semantik = uncle(Onkel, Eigenname),
+%	 is(Struktur, 7*7).
 
 %%	[ist,martha,die,tante,von,kevin]  v [ist,martha,eine,tante,von,kevin]
 s(Semantik, Struktur, [Verb, Eigenname_1, Artikel, Nomen, Praeposition, Eigenname_2], []) :-
-	entscheidungsfragen(Eigenname_1, Nomen, Eigenname_2, [Verb, Eigenname_1, Artikel, Nomen, Praeposition, Eigenname_2], []),
-	Semantik = aunt(Eigenname_1, Eigenname_2),
-	is(Struktur, 10123).
+	entscheidungsfragen(_SemantikVerb, _SemantikEigenname,
+			    _SemantikNomen, _SemantikPraepositionalphrase, _SemantikPraepositionalphraseEigenname,
+			    [Verb, Eigenname_1, Artikel, Nomen, Praeposition, Eigenname_2], []).
+
 
 %%	Define Clause Grammar / DCG
-ergaenzungsfragen(Nomen, Eigenname) -->
-	interrogativpronomen, verphrase(Nomen),
-	praepositionalphrase(Eigenname).
+ergaenzungsfragen(SemantikVerb, SemantikNominalphrase, SemantikPraepositionphrase, SemantikEigenname) -->
+	interrogativpronomen(_Semantik), verphrase(SemantikVerb, SemantikNominalphrase),
+	praepositionalphrase(SemantikPraepositionphrase, SemantikEigenname).
 
-entscheidungsfragen(Eigenname_1, Nomen, Eigenname_2) -->
-	verb, eigenname(Eigenname_1), artikel, nomen(Nomen), praepositionalphrase(Eigenname_2).
+entscheidungsfragen(SemantikVerb, SemantikEigenname, SemantikNomen, SemantikPraepositionalphrase, SemantikPraepositionalphraseEigenname) -->
+	verb(SemantikVerb), eigenname(SemantikEigenname), artikel, nomen(SemantikNomen), praepositionalphrase(SemantikPraepositionalphrase, SemantikPraepositionalphraseEigenname).
 
-interrogativpronomen --> [wer].
-verb --> [X], {lex(X, verb)}.
-artikel --> [der]; [die]; [das].
-nomen(Nomen) --> [Nomen].
-praeposition --> [von].
-eigenname(Eigenname) --> [Eigenname].
+interrogativpronomen(Semantik) --> [Wort], {lex(Wort, Semantik, _Genus, _Casus, _Numerus, _What, interrogativpronomen)}.
+verb(Semantik) --> [Wort], {lex(Wort, Semantik, _Genus, _Casus, _Numerus, _Whatever, verb)}.
+artikel --> [Wort], {lex(Wort, _Semantik, _Genus, _Casus, _Numerus, _What, artikel)}.
+nomen(Semantik) --> [Wort], {lex(Wort, Semantik, _Genus, _Casus, _Numerus, _What, nomen)}.
+praeposition(Semantik) --> [Wort], {lex(Wort, Semantik, _Genus, _Casus, _Numerus, _What, praeposition)}.
+eigenname(Semantik) --> [Eigenname], {lex(Eigenname, Semantik, _Genus, _Casus, _Numerus, _What, eigenname)}.
 
-verphrase(Nomen)--> verb, nominalphrase(Nomen).
-nominalphrase(Nomen) --> (artikel, nomen(Nomen)) ; nomen(Nomen).
-praepositionalphrase(Eigenname) --> praeposition, eigenname(Eigenname).
+verphrase(SemantikVerb, SemantikNominalphrase)--> verb(SemantikVerb), nominalphrase(SemantikNominalphrase).
+nominalphrase(SemantikArtikel, SemantikNomen) --> (artikel(SemantikArtikel), nomen(SemantikNomen)) ; nomen(SemantikNomen).
+praepositionalphrase(SemantikPraeposition, SemantikEigenname) --> praeposition(SemantikPraeposition), eigenname(SemantikEigenname).
 
 
 
