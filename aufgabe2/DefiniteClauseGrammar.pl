@@ -1,55 +1,131 @@
 %% Familienstammbaum einbinden
 :-consult('../lexikon.pl').
 
-% wiki bespiel
-%sentence --> noun_phrase, verb_phrase, kuh.
-% noun_phrase --> det, noun.
-% verb_phrase --> verb, noun_phrase.
-% det --> [the].
-% det --> [a].
-% noun --> [cat].
-% noun --> [bat].
-% verb --> [eats].
-% kuh --> [kuh].
+
+%=========================================================================================================
+%						 DIE ANFRAGE
+%=========================================================================================================
+s(Semantik, Struktur, Frage, []) :-
+	frage(Semantik, Struktur, Frage, []).
 
 
-%%	[wer,ist,der,onkel,von,kevin] v [wer,ist,onkel,von,kevin]
-% s(Semantik, Struktur, [Interrogativpronomen, Verb, Artikel, Nomen, Praeposition, Eigenname], []) :-
-%	 ergaenzungsfragen(_SemantikVerb, _SemantikNominalphrase,
-%	 _SemantikPraepositionphrase, _SemantikEigenname,
-%	 [Interrogativpronomen, Verb, Artikel, Nomen, Praeposition,
-%	 Eigenname], []),
-%	 uncle(Onkel, Eigenname),
-%	 Semantik = uncle(Onkel, Eigenname),
-%	 is(Struktur, 7*7).
+%=========================================================================================================
+%						 DER DISPATCHER
+%=========================================================================================================
+% Das ist eine Entscheidungsfrage! Z.B. ist petra die tante von kevin
+frage(Semantik, Struktur, [Verb, Eigenname_1, Artikel, Nomen, Praeposition, Eigenname_2], []) :-
 
-%%	[ist,martha,die,tante,von,kevin]  v [ist,martha,eine,tante,von,kevin]
-s(Semantik, Struktur, [Verb, Eigenname_1, Artikel, Nomen, Praeposition, Eigenname_2], []) :-
-	entscheidungsfragen(_SemantikVerb, _SemantikEigenname,
-			    _SemantikNomen, _SemantikPraepositionalphrase, _SemantikPraepositionalphraseEigenname,
-			    [Verb, Eigenname_1, Artikel, Nomen, Praeposition, Eigenname_2], []).
+	entscheidungsfragen(_SemantikVerb, StrukturVerb, _SemantikEigenname_1, StrukturEigenname_1,
+			    StrukturNominalphrase, _StrukturArtikel, SemantikNomen, _StrukturNomen,
+			    StrukturPraepositionalphrase, _SemantikPraeposition, _StrukturPraeposition, _SemantikEigenname_2, _StrukturEigenname_2,
+			    [Verb, Eigenname_1, Artikel, Nomen, Praeposition, Eigenname_2], []),
+
+	% Jetzt Brauche ich den Nomen, Eigenname und das Praedikat -> SemantikNomen
+	% Daraus bauen wir die gewuenschte Semantik zusammen
+	giveSemanticSyntax(SemantikNomen, Eigenname_1, Eigenname_2, Semantik),
+
+	% Jetzt bauen wir die gewuenschte Struktur zusammen
+	giveStructSyntax([StrukturVerb, StrukturEigenname_1, StrukturNominalphrase,
+			   StrukturPraepositionalphrase], Struktur).
+
+% Das ist eine Ergaenzungsfrage! Z.B. wer ist der onkel von hans
+frage(Semantik, Struktur, [Interrogativpronomen, Verb, Artikel, Nomen, Praeposition, Eigenname], []) :-
 
 
-%%	Define Clause Grammar / DCG
-ergaenzungsfragen(SemantikVerb, SemantikNominalphrase, SemantikPraepositionphrase, SemantikEigenname) -->
-	interrogativpronomen(_Semantik), verphrase(SemantikVerb, SemantikNominalphrase),
-	praepositionalphrase(SemantikPraepositionphrase, SemantikEigenname).
+	ergaenzungsfragen(_SemantikInterrogativpronomen, StrukturInterrogativpronomen, StrukturVerphrase,
+			  _StrukturNominalphrase, _SemantikVerb, _StrukturVerb, _StrukturArtikel,
+			  SemantikNomen, _StrukturNomen, StrukturPraepositionalphrase, _SemantikPraeposition,
+			  _StrukturPraeposition, _SemantikEigenname, _StrukturEigenname,
+			  [Interrogativpronomen, Verb, Artikel, Nomen, Praeposition, Eigenname], []),
 
-entscheidungsfragen(SemantikVerb, SemantikEigenname, SemantikNomen, SemantikPraepositionalphrase, SemantikPraepositionalphraseEigenname) -->
-	verb(SemantikVerb), eigenname(SemantikEigenname), artikel, nomen(SemantikNomen), praepositionalphrase(SemantikPraepositionalphrase, SemantikPraepositionalphraseEigenname).
-
-interrogativpronomen(Semantik) --> [Wort], {lex(Wort, Semantik, _Genus, _Casus, _Numerus, _What, interrogativpronomen)}.
-verb(Semantik) --> [Wort], {lex(Wort, Semantik, _Genus, _Casus, _Numerus, _Whatever, verb)}.
-artikel --> [Wort], {lex(Wort, _Semantik, _Genus, _Casus, _Numerus, _What, artikel)}.
-nomen(Semantik) --> [Wort], {lex(Wort, Semantik, _Genus, _Casus, _Numerus, _What, nomen)}.
-praeposition(Semantik) --> [Wort], {lex(Wort, Semantik, _Genus, _Casus, _Numerus, _What, praeposition)}.
-eigenname(Semantik) --> [Eigenname], {lex(Eigenname, Semantik, _Genus, _Casus, _Numerus, _What, eigenname)}.
-
-verphrase(SemantikVerb, SemantikNominalphrase)--> verb(SemantikVerb), nominalphrase(SemantikNominalphrase).
-nominalphrase(SemantikArtikel, SemantikNomen) --> (artikel(SemantikArtikel), nomen(SemantikNomen)) ; nomen(SemantikNomen).
-praepositionalphrase(SemantikPraeposition, SemantikEigenname) --> praeposition(SemantikPraeposition), eigenname(SemantikEigenname).
+	giveSemanticSyntax_2(SemantikNomen, _Antwort, Eigenname, Semantik),
+	giveStructSyntax([StrukturInterrogativpronomen, StrukturVerphrase, StrukturPraepositionalphrase], Struktur).
 
 
 
 
+%=========================================================================================================
+%						 DIE FRAGEN
+%=========================================================================================================
+% Wer ist der vater von klaus
+ergaenzungsfragen(SemantikInterrogativpronomen, StrukturInterrogativpronomen, StrukturVerphrase,
+		  StrukturNominalphrase, SemantikVerb, StrukturVerb, StrukturArtikel,
+		  SemantikNomen, StrukturNomen, StrukturPraepositionalphrase, SemantikPraeposition,
+		  StrukturPraeposition, SemantikEigenname, StrukturEigenname) -->
+
+	% SATZBAU LAUT UNSERER SKIZZE
+	interrogativpronomen(SemantikInterrogativpronomen, StrukturInterrogativpronomen),
+
+	verphrase(StrukturVerphrase, SemantikVerb, StrukturVerb, StrukturNominalphrase,
+		  SemantikNomen, StrukturNomen, StrukturArtikel),
+
+	praepositionalphrase(StrukturPraepositionalphrase, SemantikPraeposition, StrukturPraeposition, SemantikEigenname, StrukturEigenname).
+
+
+% Entscheidungsfrage: ist maria die tante von dima
+entscheidungsfragen(SemantikVerb, StrukturVerb, SemantikEigenname_1, StrukturEigenname_1,
+		    StrukturNominalphrase,
+		    StrukturArtikel, SemantikNomen, StrukturNomen,
+		    StrukturPraepositionalphrase, SemantikPraeposition, StrukturPraeposition, SemantikEigenname_2, StrukturEigenname_2) -->
+
+	% SATZBAU LAUT UNSERER SKIZZE
+	verb(SemantikVerb, StrukturVerb),
+
+	eigenname(SemantikEigenname_1, StrukturEigenname_1),
+
+	nominalphrase(StrukturNominalphrase, StrukturArtikel, SemantikNomen, StrukturNomen),
+
+	praepositionalphrase(StrukturPraepositionalphrase, SemantikPraeposition, StrukturPraeposition, SemantikEigenname_2, StrukturEigenname_2).
+
+
+
+%=========================================================================================================
+%						 HILFSREGELN
+%=========================================================================================================
+%Fuer Entscheidungsfragen
+giveSemanticSyntax(Praedikat, Eigenname_1, Eigenname_2, Result) :-
+	Result =.. [Praedikat, Eigenname_1, Eigenname_2].
+
+% Fuer Ergaenzungsfragen
+giveSemanticSyntax_2(Praedikat, Eigenname_1, Eigenname_2, Result) :-
+	Result =.. [Praedikat, Eigenname_1, Eigenname_2],
+	call(Result),
+	Result =.. [Praedikat, Eigenname_1, Eigenname_2].
+
+giveStructSyntax(List, Result) :- Result = List.
+
+
+
+
+%=========================================================================================================
+%	                               Define Clause Grammar / DCG
+%=========================================================================================================
+interrogativpronomen(Semantik, Struktur) --> [Wort], {lex(Wort, Semantik, _Genus, _Casus, _Numerus, _What, interrogativpronomen, Struktur)}.
+verb(Semantik, Struktur) --> [Wort], {lex(Wort, Semantik, _Genus, _Casus, _Numerus, _Whatever, verb, Struktur)}.
+artikel(Struktur) --> [Wort], {lex(Wort, _Semantik, _Genus, _Casus, _Numerus, _What, artikel, Struktur)}.
+nomen(Semantik, Struktur) --> [Wort], {lex(Wort, Semantik, _Genus, _Casus, _Numerus, _What, nomen, Struktur)}.
+praeposition(Semantik, Struktur) --> [Wort], {lex(Wort, Semantik, _Genus, _Casus, _Numerus, _What, praeposition, Struktur)}.
+eigenname(Semantik, Struktur) --> [Eigenname], {lex(Eigenname, Semantik, _Genus, _Casus, _Numerus, _What, eigenname, Struktur)}.
+
+
+verphrase(StrukturVerphrase, SemantikVerb, StrukturVerb, StrukturNominalphrase, SemantikNominalphraseNomen,
+	  StrukturNominalphraseNomen, StrukturNominalphraseArtikel) -->
+	verb(SemantikVerb, StrukturVerb),
+	nominalphrase(StrukturNominalphrase, StrukturNominalphraseArtikel, SemantikNominalphraseNomen, StrukturNominalphraseNomen),
+	{lex(StrukturVerb, StrukturNominalphrase, verphrase, StrukturVerphrase)}.
+
+% Hier noch mal mir mit den oder angucken, evtl einfach nur die Aussagen
+% vertauschen!
+nominalphrase(StrukturNominalphrase, StrukturArtikel, SemantikNomen, StrukturNomen) -->
+	(artikel(StrukturArtikel), nomen(SemantikNomen, StrukturNomen)),
+	{lex(StrukturArtikel, StrukturNomen, nominalphrase, StrukturNominalphrase)}, !
+
+	;
+	nomen(SemantikNomen, StrukturNomen),
+	{lex(StrukturArtikel, StrukturNomen, nominalphrase, StrukturNominalphrase)}.
+
+praepositionalphrase(StrukturPraepositionalphrase, SemantikPraeposition, StrukturPraeposition, SemantikEigenname, StrukturEigenname) -->
+	praeposition(SemantikPraeposition, StrukturPraeposition),
+	eigenname(SemantikEigenname, StrukturEigenname),
+	{lex(StrukturPraeposition, StrukturEigenname, praepositionalphrase, StrukturPraepositionalphrase)}.
 
