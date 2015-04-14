@@ -25,8 +25,8 @@ frage(Semantik, Struktur, [Verb, Eigenname_1, Artikel, Nomen, Praeposition, Eige
 	giveSemanticSyntax(SemantikNomen, Eigenname_1, Eigenname_2, Semantik),
 
 	% Jetzt bauen wir die gewuenschte Struktur zusammen
-	giveStructSyntax([StrukturVerb, StrukturEigenname_1, StrukturNominalphrase,
-			   StrukturPraepositionalphrase], Struktur).
+	giveStructSyntax(StrukturVerb, StrukturEigenname_1, StrukturNominalphrase,
+			   StrukturPraepositionalphrase, Struktur).
 
 % Das ist eine Ergaenzungsfrage! Z.B. wer ist der onkel von hans
 frage(Semantik, Struktur, [Interrogativpronomen, Verb, Artikel, Nomen, Praeposition, Eigenname], []) :-
@@ -39,8 +39,20 @@ frage(Semantik, Struktur, [Interrogativpronomen, Verb, Artikel, Nomen, Praeposit
 			  [Interrogativpronomen, Verb, Artikel, Nomen, Praeposition, Eigenname], []),
 
 	giveSemanticSyntax_2(SemantikNomen, _Antwort, Eigenname, Semantik),
-	giveStructSyntax([StrukturInterrogativpronomen, StrukturVerphrase, StrukturPraepositionalphrase], Struktur).
+	giveStructSyntax(StrukturInterrogativpronomen, StrukturVerphrase, StrukturPraepositionalphrase, Struktur).
 
+% Das ist eine Ergaenzungsfrage! Z.B. wer ist onkel von hans
+frage(Semantik, Struktur, [Interrogativpronomen, Verb, Nomen, Praeposition, Eigenname], []) :-
+
+
+	ergaenzungsfragen(_SemantikInterrogativpronomen, StrukturInterrogativpronomen, StrukturVerphrase,
+			  _StrukturNominalphrase, _SemantikVerb, _StrukturVerb, _StrukturArtikel,
+			  SemantikNomen, _StrukturNomen, StrukturPraepositionalphrase, _SemantikPraeposition,
+			  _StrukturPraeposition, _SemantikEigenname, _StrukturEigenname,
+			  [Interrogativpronomen, Verb, _Artikel, Nomen, Praeposition, Eigenname], []),
+
+	giveSemanticSyntax_2(SemantikNomen, _Antwort, Eigenname, Semantik),
+	giveStructSyntax(StrukturInterrogativpronomen, StrukturVerphrase, StrukturPraepositionalphrase, Struktur).
 
 
 
@@ -82,17 +94,23 @@ entscheidungsfragen(SemantikVerb, StrukturVerb, SemantikEigenname_1, StrukturEig
 %=========================================================================================================
 %						 HILFSREGELN
 %=========================================================================================================
+%Fuer Entscheidungsfragen
 giveSemanticSyntax(Praedikat, Eigenname_1, Eigenname_2, Result) :-
 	Result =.. [Praedikat, Eigenname_1, Eigenname_2].
 
-%
+% Fuer Ergaenzungsfragen
 giveSemanticSyntax_2(Praedikat, Eigenname_1, Eigenname_2, Result) :-
-	Result =.. [Praedikat, Eigenname_1, Eigenname_2],
-	call(Result),
 	Result =.. [Praedikat, Eigenname_1, Eigenname_2].
+	%%call(Result),
+	%%Result =.. [Praedikat, Eigenname_1, Eigenname_2].
 
-giveStructSyntax(List, Result) :- Result = List.
+% TODO:
+%giveStructSyntax(List, Result) :- Result = List.
+giveStructSyntax(StrukturInterrogativpronomen, StrukturVerphrase, StrukturPraepositionalphrase, Result) :-
+	Result =.. [s, StrukturInterrogativpronomen, StrukturVerphrase, StrukturPraepositionalphrase].
 
+giveStructSyntax(StrukturVerb, StrukturEigenname, StrukturNominalphrase, StrukturPraepositionalphrase, Result) :-
+	Result =.. [s, StrukturVerb, StrukturEigenname, StrukturNominalphrase, StrukturPraepositionalphrase].
 
 
 
@@ -113,12 +131,9 @@ verphrase(StrukturVerphrase, SemantikVerb, StrukturVerb, StrukturNominalphrase, 
 	nominalphrase(StrukturNominalphrase, StrukturNominalphraseArtikel, SemantikNominalphraseNomen, StrukturNominalphraseNomen),
 	{lex(StrukturVerb, StrukturNominalphrase, verphrase, StrukturVerphrase)}.
 
-% Hier noch mal mir mit den oder angucken, evtl einfach nur die Aussagen
-% vertauschen!
 nominalphrase(StrukturNominalphrase, StrukturArtikel, SemantikNomen, StrukturNomen) -->
 	(artikel(StrukturArtikel), nomen(SemantikNomen, StrukturNomen)),
 	{lex(StrukturArtikel, StrukturNomen, nominalphrase, StrukturNominalphrase)}, !
-
 	;
 	nomen(SemantikNomen, StrukturNomen),
 	{lex(StrukturArtikel, StrukturNomen, nominalphrase, StrukturNominalphrase)}.

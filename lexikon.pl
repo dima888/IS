@@ -10,7 +10,7 @@
 
 %%	AB Hier kommen die Morphologischen Eigenschaften! Aus Matrix
 %	@param3: GENUS: Maskulinum- Femeninum - Neutrum - Plural
-%	@param4: CASUS: What the fuck????
+%	@param4: CASUS: Der Fall (Akusutiv, Nominativ, Genitiv, Dativ)
 %	@param5: Numerus: Singular/Plural
 %
 %
@@ -34,6 +34,8 @@ lex(ist, ist, _Genus, _Casus, singular, _What, verb, Struktur) :- giveStruct(ver
 lex(der, der, maskulinium, _Casus, singular, _What, artikel, Struktur) :- giveStruct(artikel, der, Struktur).
 lex(die, die, femeninum, _Casus, singular, _What, artikel, Struktur) :- giveStruct(artikel, die, Struktur).
 lex(das, das, neutrum, _Casus, singular, _What, artikel, Struktur) :- giveStruct(artikel, das, Struktur).
+
+lex(eine, die, femeninum, _Casus, singular, _What, artikel, Struktur) :- giveStruct(artikel, eine, Struktur).
 %lex(die, die, femeninum, _Casus, plural, _What, artikel, Struktur).
 
 %	interrogativpronomen
