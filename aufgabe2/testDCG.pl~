@@ -1,0 +1,24 @@
+:-consult(definiteClauseGrammar).
+
+
+:-begin_tests(dcg).
+
+test(ergaenzungsfrage) :-
+	s(Semantik, Struktur, [wer, ist, der, onkel, von, dima], []),
+	Semantik.
+
+test(ergaenzungsfrage, [fail]) :-
+	s(Semantik, Struktur, [wer, ist, die, onkel, von, dima], []),
+	Semantik.
+
+test(entscheidungsfrage) :-
+	23.
+
+test(entscheidungsfrage, [fail]) :-
+	32.
+
+
+:-end_tests(dcg).
+
+
+% Run Test -> run_tests(dcg).

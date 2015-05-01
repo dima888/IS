@@ -1,8 +1,5 @@
 %% Familienstammbaum einbinden
 :-consult('../lexikon.pl').
-
-
-
 %=========================================================================================================
 %						 FRAGEN / DER DISPATCHER
 %=========================================================================================================
@@ -12,7 +9,7 @@ s(Semantik, s(StrukturInterrogativpronomen, StrukturVerphrase, StrukturPraeposit
 
 		% SATZBAU LAUT UNSERER SKIZZE
 	interrogativpronomen(StrukturInterrogativpronomen, [Interrogativpronomen], []),
-	verphrase(StrukturVerphrase, [Verb, Artikel, Nomen], []),
+	verphrase(StrukturVerphrase, _ArtikelWort, _NomenWort, _Genus, [Verb, Artikel, Nomen], []),
 	praepositionalphrase(StrukturPraepositionalphrase, [Praeposition, Eigenname], []),
 	generateSemantic(Nomen, _Result, Eigenname, Semantik).
 
@@ -24,7 +21,7 @@ s(Semantik, s(StrukturInterrogativpronomen, StrukturVerphrase, StrukturPraeposit
 
 		% SATZBAU LAUT UNSERER SKIZZE
 	interrogativpronomen(StrukturInterrogativpronomen, [Interrogativpronomen], []),
-	verphrase(StrukturVerphrase, [Verb, Nomen], []),
+	verphrase(StrukturVerphrase, _ArtikelWort, _NomenWort, _Genus, [Verb, Nomen], []),
 	praepositionalphrase(StrukturPraepositionalphrase, [Praeposition, Eigenname], []),
 	generateSemantic(Nomen, _Result, Eigenname, Semantik).
 
@@ -34,8 +31,8 @@ s(Semantik, s(StrukturVerb, StrukturEigenname, StrukturNominalphrase, StrukturPr
 	      [Verb, Eigenname_1, Artikel, Nomen, Praeposition, Eigenname_2 ], []) :-
 
   verb(StrukturVerb, [Verb], []),
-  eigenname(StrukturEigenname, [Eigenname_1], []),
-  nominalphrase(StrukturNominalphrase, [Artikel, Nomen], []),
+  eigenname(StrukturEigenname, _Genus, [Eigenname_1], []),
+  nominalphrase(StrukturNominalphrase, _ArtikelWort, _NomenWort,_Genus, [Artikel, Nomen], []),
   praepositionalphrase(StrukturPraepositionalphrase, [Praeposition, Eigenname_2], []),
 
   generateSemantic(Nomen, Eigenname_1, Eigenname_2, Semantik).
@@ -49,39 +46,50 @@ generateSemantic(Nomen, Param_1, Param_2, Result) :-
 	lex(Nomen, Semantik, _, _, _, _, nomen),
 	Result =.. [Semantik, Param_1, Param_2].
 
+% Die im Praktikum gestellte Aufgabe
+a(Semantik, _, Antwort, []) :-
+      antwort(Semantik, Antwort, []).
 
 %=========================================================================================================
 %	                               Define Clause Grammar / DCG
 %=========================================================================================================
+
+antwort(Semantik) -->
+	eigenname((Eigenname_1_Struktur), Genus),
+	verphrase(verphrase(_StrukturVerb, _StrukturNominalphrase), _ArtikelWort, NomenWort, Genus),
+	praepositionalphrase(praepositionalphrase(_StrukturPraeposition, Eigenname_2_Struktur)),        {
+        arg(1, Eigenname_1_Struktur, Eigenname_1),
+	arg(1, Eigenname_2_Struktur, Eigenname_2),
+	Semantik =.. [NomenWort, Eigenname_1, Eigenname_2]
+	}.
+
 interrogativpronomen(interrogativpronomen(Semantik)) -->
 	[Wort], {lex(Wort, Semantik, _Genus, _Casus, _Numerus, _What, interrogativpronomen)}.
 
 verb(verb(Semantik)) --> [Wort],
 	{lex(Wort, Semantik, _Genus, _Casus, _Numerus, _Whatever, verb)}.
 
-artikel(artikel(Semantik), Genus) -->
+artikel(artikel(Semantik), Wort, Genus) -->
 	[Wort], {lex(Wort, Semantik, Genus, _Casus, _Numerus, _What, artikel)}.
 
-nomen(nomen(Semantik), Genus) -->
-	[Wort], {lex(Wort, Semantik, Genus, _Casus, _Numerus, _What, nomen)}.
+nomen(nomen(Wort), Wort, Genus) -->
+	[Wort], {lex(Wort, _Semantik, Genus, _Casus, _Numerus, _What, nomen)}.
 
 praeposition(praeposition(Semantik)) -->
 	[Wort], {lex(Wort, Semantik, _Genus, _Casus, _Numerus, _What, praeposition)}.
 
-eigenname(eigenname(Eigenname)) -->
-	[Eigenname], {lex(Eigenname, _Semantik, _Genus, _Casus, _Numerus, _What, eigenname)}.
+eigenname(eigenname(Eigenname), Genus) -->
+	[Eigenname], {lex(Eigenname, _Semantik, Genus, _Casus, _Numerus, _What, eigenname)}.
 
-
-verphrase(verphrase(StrukturVerb, StrukturNominalphrase)) -->
+verphrase(verphrase(StrukturVerb, StrukturNominalphrase), ArtikelWort, NomenWort, Genus) -->
 	verb(StrukturVerb),
-	nominalphrase(StrukturNominalphrase).
+	nominalphrase(StrukturNominalphrase, ArtikelWort, NomenWort, Genus).
 
-nominalphrase(nominalphrase(StrukturArtikel, StrukturNomen)) -->
-	(artikel(StrukturArtikel, Genus), nomen(StrukturNomen, Genus)), !
-	;
-	nomen(StrukturNomen, Genus).
+nominalphrase(nominalphrase(StrukturArtikel, StrukturNomen), ArtikelWort, NomenWort, Genus) -->
+	nomen(StrukturNomen, NomenWort, Genus);
+	artikel(StrukturArtikel, ArtikelWort, Genus), nomen(StrukturNomen, NomenWort, Genus).
 
 praepositionalphrase(praepositionalphrase(StrukturPraeposition, StrukturEigenname)) -->
 	praeposition(StrukturPraeposition),
-	eigenname(StrukturEigenname).
+	eigenname(StrukturEigenname, _Genus).
 

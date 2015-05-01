@@ -36,6 +36,7 @@ lex(die, die, femeninum, _Casus, singular, _What, artikel).
 lex(das, das, neutrum, _Casus, singular, _What, artikel).
 
 lex(eine, die, femeninum, _Casus, singular, _What, artikel).
+lex(ein, der, maskulinium, _Casus, singular, _What, artikel).
 %lex(die, die, femeninum, _Casus, plural, _What, artikel, Struktur).
 
 %	interrogativpronomen
@@ -45,8 +46,8 @@ lex(wer, wer, _Genus, _Casus, _Numerus, _What, interrogativpronomen).
 lex(von, von, _Genus, _Casus, _Numerus, _What, praeposition).
 
 %	Eigenname
-lex(X, X, _Genus, _Casus, _Numerus, _What, eigenname) :- male(X).
-lex(X, X, _Genus, _Casus, _Numerus, _What, eigenname) :- female(X).
+lex(X, X, maskulinium, _Casus, _Numerus, _What, eigenname) :- male(X).
+lex(X, X, femeninum, _Casus, _Numerus, _What, eigenname) :- female(X).
 
 %	Nomen
 lex(opa, grandpa, maskulinium, _Casus, _Numerus, _What, nomen).
