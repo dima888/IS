@@ -56,11 +56,12 @@ a(Semantik, _, Antwort, []) :-
 
 antwort(Semantik) -->
 	eigenname((Eigenname_1_Struktur), Genus),
-	verphrase(verphrase(_StrukturVerb, _StrukturNominalphrase), ArtikelWort, NomenWort, Genus),
+	verphrase(verphrase(_StrukturVerb, _StrukturNominalphrase), _ArtikelWort, NomenWort, Genus),
 	praepositionalphrase(praepositionalphrase(_StrukturPraeposition, Eigenname_2_Struktur)),        {
         arg(1, Eigenname_1_Struktur, Eigenname_1),
 	arg(1, Eigenname_2_Struktur, Eigenname_2),
-	Semantik =.. [NomenWort, Eigenname_1, Eigenname_2]
+	lex(NomenWort, Praedikat, femeninum, _Casus, _Numerus, _What, nomen),
+	Semantik =.. [Praedikat, Eigenname_1, Eigenname_2]
 	}.
 
 interrogativpronomen(interrogativpronomen(Semantik)) -->

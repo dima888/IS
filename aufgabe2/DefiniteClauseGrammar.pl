@@ -60,7 +60,8 @@ antwort(Semantik) -->
 	praepositionalphrase(praepositionalphrase(_StrukturPraeposition, Eigenname_2_Struktur)),        {
         arg(1, Eigenname_1_Struktur, Eigenname_1),
 	arg(1, Eigenname_2_Struktur, Eigenname_2),
-	Semantik =.. [NomenWort, Eigenname_1, Eigenname_2]
+	lex(NomenWort, Praedikat, _Genus, _Casus, _Numerus, _What, nomen),
+	Semantik =.. [Praedikat, Eigenname_1, Eigenname_2]
 	}.
 
 interrogativpronomen(interrogativpronomen(Semantik)) -->
