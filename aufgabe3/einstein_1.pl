@@ -4,27 +4,7 @@
 % zebra, fox horse), drinks (tea, orange juice, milk, water, coffee), and
 % cigarettes (Old Gold, Kools, Chesterfield, Lucky Strike, Parliament).
 
-
-% --------------------	Wissensbasis --------------------
-%	House Numbers
-houseNumber(1). houseNumber(2). houseNumber(3). houseNumber(4). houseNumber(5).
-
-%	Nationalitys
-nationality(englishman). nationality(spaniard). nationality(ukrainian). nationality(norwegian). nationality(japanese).
-
-%	Pets
-pet(dog). pet(snake). pet(zebra). pet(fox). pet(horse).
-
-%	House Colors
-color(red). color(green). color(ivory). color(blue). color(yellow).
-
-%	Drinks
-drink(tea). drink(orangeJuice). drink(milk). drink(water). drink(coffee).
-
-%	Cigarettes Marks
-cigarettes(oldGold). cigarettes(kools). cigarettes(chesterfield). cigarettes(luckyStrike). cigarettes(parliaments).
-
-%	House
+% House
 % rule generate a empty house
 % AttributeList => [number, color, nationality, cigarettes, pet]
 % Result =>  [[number, _G4573], [color, _G4582], [nationality, _G4594], [cigarettes, _G4609], [pet, _G4627]]
@@ -51,6 +31,7 @@ generateEmptyHouses(HouseList, Count, Result, Number, AttributeList) :-
 	% generate a house
 	generateEmptyHouse(House, AttributeList),
 
+	% set automatic a house number
 	%setAttribute(House, number, Number),
 
 	% increment Number
@@ -69,56 +50,16 @@ generateEmptyHouses(HouseList, Count, Result, Number, AttributeList) :-
 constrain_1(HouseList, Count, AttributeList) :-
 	generateEmptyHouses(HouseList, Count, AttributeList).
 
-% Set a Constrain.
 % Example: setConstrain(HouseList, nationality, englishman, color, red).
-setConstrain(HouseList, Attribute_1, Value_1, Attribute_2, Value_2) :-
+setConstrain(HouseList, Attribute_1, Value_1, Attribute_2, Value_2, House) :-
 	member(House, HouseList),
-	setConstrainForHouse(House, Attribute_1, Value_1, Attribute_2, Value_2).
+	member([Attribute_1, Value_1], House),
+	member([Attribute_2, Value_2], House).
 
-% Set a Constrain.
-% Example: setConstrain(HouseList, nationality, englishman, color, red).
-setConstrain_2(HouseList, Attribute_1, Value_1, Attribute_2, Value_2) :-
+setConstrain(HouseList, Attribute_1, Value_1, Attribute_2, Value_2, House) :-
 	member(House, HouseList),
-	setConstrainForHouse_2(House, Attribute_1, Value_1, Attribute_2, Value_2).
-
-
-% set only, the variable is unbound
-setAttribute(House, Attribute, Value) :-
-	member([Attribute, Var], House),
-	(
-	    not(atom(Var)),
-	    not(number(Var))
-	),
-	member([Attribute, Value], House).
-
-% In die eine Richtung schauen
-setConstrainForHouse(House, Attribute_1, Value_1, Attribute_2, Value_2) :-
-	member([Attribute_2, Elem], House),
-	Elem == Value_2,
-	setAttribute(House, Attribute_1, Value_1).
-
-% In die Andere Richtung schauen
-setConstrainForHouse(House, Attribute_1, Value_1, Attribute_2, Value_2) :-
-	member([Attribute_1, Elem], House),
-	Elem == Value_1,
-	setAttribute(House, Attribute_2, Value_2).
-
-% In die eine Richtung schauen
-setConstrainForHouse_2(House, Attribute_1, Value_1, Attribute_2, Value_2) :-
-	member([Attribute_2, Elem], House),
-	(   not(atom(Elem)), not(number(Elem))),
-	setAttribute(House, Attribute_1, Value_1),
-	setAttribute(House, Attribute_2, Value_2).
-
-
-% In die Andere Richtung schauen
-setConstrainForHouse_2(House, Attribute_1, Value_1, Attribute_2, Value_2) :-
-	member([Attribute_1, Elem], House),
-	(   not(atom(Elem)), not(number(Elem))),
-	setAttribute(House, Attribute_2, Value_2),
-	setAttribute(House, Attribute_1, Value_1).
-
-
+	member([Attribute_2, Value_2], House),
+	member([Attribute_1, Value_1], House).
 
 % Exmaple: (HouseList, color, green, number, ResultValue)
 getValueByIdent(HouseList, IdentAttribute, IdentValue, ResultAttribute, ResultValue) :-
@@ -131,25 +72,11 @@ getValueByIdent(HouseList, IdentAttribute, IdentValue, ResultAttribute, ResultVa
 	    number(ResultValue)
 	).
 
-% get a house
+% get a house by ident
+% exmaple getHouseByIdent(HouseList, color, blue, YourHouse)
 getHouseByIdent(HouseList, Attribute, Value, House):-
 	member(House, HouseList),
 	member([Attribute, Value], House).
-
-% TODO: Analysieren!!!
-leftOf([House_A, House_B |_], House_A, House_B).
-leftOf([_| HouseList], House_A, House_B) :-
-	leftOf(HouseList, House_A, House_B).
-
-nextTo(HouseList, House_A, House_B) :-
-	leftOf(HouseList, House_A, House_B); leftOf(HouseList, House_B, House_A).
-
-% Change position in the house list
-neighbour(HouseList, House_1, House_2) :-
-	leftOf(HouseList, House_1, House_2).
-
-% House in the middle: TODO: Generisch!!!
-middleHouse([_, _, House, _, _], House).
 
 % Das grüne Haus ist direkt rechts vom weißen Haus.
 %----------------------------------------------------
@@ -176,11 +103,42 @@ setConstrainOnNeighbour(HouseList) :-
 	GreenHouseNumber is IvoryHouseNumber -1,
 
 	% Nummer oder Farbe fuer das rechte Haus setzten
-	setConstrain(HouseList, color, green, number, GreenHouseNumber ),
+	setConstrain(HouseList, color, green, number, GreenHouseNumber ).
+
+% Constrain, house nr, must deferent about 1
+setHouseTupleConstrain(HouseList, LeftHouseAttribute_1, LeftHouseValue_1, RightHouseAttribute_2, RightHouseValue_2) :-
+
+	% Exmaple: (HouseList, color, green, number, ResultValue)
+	getValueByIdent(HouseList, LeftHouseAttribute_1, LeftHouseValue_1, number, LeftHouseNumber),
+	getValueByIdent(HouseList, RightHouseAttribute_2, RightHouseValue_2, number, RightHouseNumber),
+
+	% Constrain
+	Equal is LeftHouseNumber + 1,
+	Equal == RightHouseNumber.
 
 
 
+% Der Mann, der Chesterfields raucht, wohnt neben dem Mann mit dem Fuchs.
+% Die Marke Kools wird geraucht im Haus neben dem Haus mit dem Pferd.
+% 15)TODO:  The Norwegian lives next to the blue house.
+setNeighbourContrain(HouseList, Attribute_1, Value_1, Attribute_2, Value_2) :-
+		(
+		setHouseTupleConstrain(HouseList, Attribute_1, Value_1, Attribute_2, Value_2) ;
+		setHouseTupleConstrain(HouseList, Attribute_2, Value_2, Attribute_2, Value_2)
+		).
 
+
+twoHouses(LeftHouse, RightHouse, [LeftHouse, RightHouse|_]).
+twoHouses(LeftHouse, RightHouse,[_|HouseList]) :- twoHouses(LeftHouse, RightHouse, HouseList).
+
+% A steht neben B
+neighbour(House1, House2, HouseList) :- twoHouses(House1, House2, HouseList); twoHouses(House2, House1, HouseList).
+
+% A ist das erste Haus
+firstHouse(House, [House|_]).
+
+% A steht in der Mitte
+middle(House, [_,_,House,_,_]).
 
 printOutput([]).
 printOutput(HouseList) :-
@@ -188,67 +146,64 @@ printOutput(HouseList) :-
 	write(Head), format('\n', []), format('\n', ["----------------"]),
 	printOutput(Tail).
 
-% TODO: Gesetzte Parameter durch das Constrain, duerfen nicht
-% umgeschrieben werden!!!
-%1 .. 15 constrains
-test(HouseList) :-
 
-	% 1) 5 houses, attributes ->  [number, color, nationality, drink cigarettes, pet]
-	constrain_1(HouseList, 5, [number, color, nationality, drink, cigarettes, pet]),
+%1 .. 15 constrains
+solveDyn(HouseList) :-
+
+	% 1) 5 houses, attributes ->  [color, nationality, drink cigarettes, pet]
+	constrain_1(HouseList, 5, [color, nationality, drink, cigarettes, pet]),
 
 	% 2) The Englishman lives in the red house.
-	setConstrain_2(HouseList, nationality, englishman, color, red),
+	setConstrain(HouseList, nationality, englishman, color, red, _),
 
 	% 3) The Spaniard owns the dog.
-	setConstrain_2(HouseList, nationality, spaniard, pet, dog),
+	setConstrain(HouseList, nationality, spaniard, pet, dog, _),
 
 	% 4) Coffee is drunk in the green house.
-	setConstrain_2(HouseList, color, green, drink, coffee),
+	setConstrain(HouseList, color, green, drink, coffee, _),
 
 	% 5) The Ukrainian drinks tea.
-	setConstrain_2(HouseList, nationality, ukrainian, drink, tea),
+	setConstrain(HouseList, nationality, ukrainian, drink, tea, _),
 
-        % TODO: 6) The green house is immediately to the right of the ivory house.
-	% Inet Variante: Das grüne Haus ist direkt links vom weißen Haus.
-	% Das grüne Haus ist direkt rechts vom weißen Haus.
-	% Inet: das grüne Haus ist direkt links vom weißen Haus
-	getHouseByIdent(HouseList, color, green, House_Left),
-	getHouseByIdent(HouseList, color, ivory, House_Right),
-	leftOf(HouseList, House_Left, House_Right),
+        % The green house is immediately to the right of the ivory house.
+	setConstrain(HouseList, color, ivory, _, _, _),
+	getHouseByIdent(HouseList, color, green, GreenHouse),
+	getHouseByIdent(HouseList, color, ivory, IvoryHouse),
+	twoHouses(IvoryHouse, GreenHouse, HouseList),
 
 	% 7) The Old Gold smoker owns the snake.
-	setConstrain_2(HouseList, cigarettes, oldGold, pet, snake),
+	setConstrain(HouseList, cigarettes, oldGold, pet, snake, _),
 
 	% 8) Kools are smoked in the yellow house.
-	setConstrain_2(HouseList, cigarettes, kools, color, yellow),
+	setConstrain(HouseList, cigarettes, kools, color, yellow, KoolsHouse),
 
 	% Milk is drunk in the middle/3 house.
-	%setConstrain_2(HouseList, number, 3, drink, milk),
-	getHouseByIdent(HouseList, drink, milk, House_Middle),
-	middleHouse(HouseList, House_Middle),
+	setConstrain(HouseList, drink, milk, number, 3, MilkHouse),
+	middle(MilkHouse, HouseList),
 
 	% 10) The Norwegian lives in the first house on the left.
-	setConstrain_2(HouseList, nationality, nowegian, number, 1),
+	setConstrain(HouseList, nationality, norwegian, number, 1, NorwegianHouse),
+	firstHouse(NorwegianHouse, HouseList),
 
-	% TODO: 11) The man who smokes Chesterfields lives in the house next to the man with the fox.
+	% The man who smokes Chesterfields lives in the house	next to the man with the fox.
 	% Der Mann, der Chesterfields raucht, wohnt neben dem Mann mit dem Fuchs.
-	getHouseByIdent(HouseList, cigarettes, chesterfield, House_From_Chesterfield),
-	getHouseByIdent(HouseList, pet, fox, House_From_Fox),
-	neighbour(HouseList, House_From_Chesterfield, House_From_Fox),
+	setConstrain(HouseList, cigarettes, chesterfields, _, _, ChesterFieldHouse),
+	setConstrain(HouseList, pet, fox, _, _, FoxHouse),
+	neighbour(ChesterFieldHouse,FoxHouse,HouseList),
 
-	% TODO: 12) Kools are smoked in the house next to the house where the horse is kept.
+	% Kools are smoked in the house next to the house where the horse is kept.
 	% Die Marke Kools wird geraucht im Haus neben dem Haus mit dem Pferd.
-	getHouseByIdent(HouseList, cigarettes, kools, House_From_Kools),
-	getHouseByIdent(HouseList, pet, horse, House_Horse),
-	neighbour(HouseList, House_From_Kools, House_Horse),
+	setConstrain(HouseList, pet, horse, _, _, HorseHouse),
+	neighbour(HorseHouse, KoolsHouse, HouseList),
 
 	% 13) The Lucky Strike smoker drinks orange juice.
-	setConstrain_2(HouseList, cigarettes, luckyStrike, drink, orangeJuice),
+	setConstrain(HouseList, cigarettes, luckyStrike, drink, orangeJuice, _),
 
 	% 14) The Japanese smoke Parliaments.
-	setConstrain_2(HouseList, cigarettes, parliaments, nationality, japanese),
+        setConstrain(HouseList, cigarettes, parliaments, nationality, japanese, _),
 
-	% 15)TODO:  The Norwegian lives next to the blue house.
-	getHouseByIdent(HouseList, nationality, norwegian, House_Nor),
-	getHouseByIdent(HouseList, color, blue, House_Blue),
-	nextTo(HouseList, House_Nor, House_Blue).
+	% 15) The Norwegian lives next to the blue house.
+	setConstrain(HouseList, color, blue, _, _, BlueHouse),
+	neighbour(NorwegianHouse, BlueHouse, HouseList).
+
+
