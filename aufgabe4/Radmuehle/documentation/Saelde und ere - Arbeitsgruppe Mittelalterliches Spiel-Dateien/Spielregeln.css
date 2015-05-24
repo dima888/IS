@@ -1,0 +1,175 @@
+/* Hier werden die CSS-Regeln für die die Spielregeln in der Arbeitsgruppe Spiel festgelegt */
+
+		body {
+			font-family: Verdana, sans-serif;
+			font-size: small;
+			line-height: 1.5em;
+			background-color: #400000; 
+
+		  }
+
+
+
+		h3 {
+			color: rgb(11, 18, 79);
+			font-size: 15px;
+		  }
+
+		h1 {
+			line-height: 1em;
+			color: rgb(11, 18, 79);
+			border-bottom: 3px solid rgb(158, 6, 27);
+		  }
+
+
+
+
+		.Kopfzeile h1 {
+			color: #191970;
+			font-family: GothicE, serif;
+			font-size: 25px;
+			font-weight: bold;
+			border-bottom: 3px solid rgb(158, 6, 27);
+		  }
+
+		#Ueberrein {
+			margin-left: 15px;
+		  }
+
+
+
+
+		#NameArbGruppe {
+		  	margin-top: 30px;
+			font-size: 28px;
+			font-weight: bold;
+			line-height: 1.8em;
+			text-align: center;
+			font-family: GothicE, serif;
+			color: rgb(158, 6, 27);
+		  }
+
+
+
+
+
+
+		.Inhalt {
+			width: 1000px;
+			padding-top: 15px;
+			padding-bottom: 5px;
+			margin-right: auto;
+			margin-left: auto;
+ 			background-color: silver; 
+		  }
+
+
+
+		#Titel {
+			margin-top: 40px;
+			font-family: GothicE, serif;
+			font-size: 28px;
+			font-weight: bold;
+			color: #191970;    
+			text-align: center;
+			padding-bottom: 20px;
+		  }
+
+
+
+
+		.Bildzentrum {
+			margin-top: 25px;
+			margin-bottom: 20px;
+		  	text-align: center;
+		  }
+
+
+
+		.trenner {
+			text-align: center;
+			margin: 25px;
+		  }
+
+
+
+		.Linkzurueck {
+		 	text-align: center;
+			margin-top: 35px;
+		  }
+
+
+		
+		.Beitragtext {
+			margin-left: 50px;
+			width: 900px;
+		  }
+
+
+		.Schriftchronik {
+			margin: 30px;
+		  }
+
+		.Infokasten {
+			line-height: 1.2;
+			border-color: rgb(11, 18, 79);
+			border-width: 1px;
+			border-style: ridge;
+			background-color: #A9A9A9;
+			width: 900px;
+			padding-top: 20px;
+			padding-bottom:20px;
+			margin-right: auto;
+			margin-left: auto;
+
+		  }
+
+
+
+
+		.Textimkast {
+			margin: 25px;
+		  }
+
+		.Listeinrueck {
+			width: 800px;
+			margin-right: auto;
+			margin-left: auto;
+		  }
+
+
+
+
+		.Uebereinrueck {
+			margin-left: 25px;
+
+		  }
+
+
+		.Auflist  {
+			margin-left: 40px;
+			margin-right: 40px;
+			font-size: 12px;
+			padding: 10px;
+			padding-top: 1px;
+		  }
+
+
+
+
+
+		.Fusszeile {
+			font-size: 0.8em;
+			line-height: normal;
+			text-align: center;
+			margin-top: 40px;
+			clear: right;
+		  }
+
+
+		.Mitte {
+			text-align: center;
+		  }
+
+
+
