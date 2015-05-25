@@ -1,4 +1,4 @@
-package controller;
+package model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,6 +9,8 @@ import java.util.Map;
 /**
  * This is our playboard for the game "Radmuehle"
  * seen the game under this link: http://www.saelde-und-ere.at/Hauptseite/Arbeitsgruppen/Spiel/Spielregeln/Radmuehle.html
+ * 
+ * This class is a composite object for the Game.java class
  * @author foxhound
  *
  */
@@ -19,6 +21,8 @@ public class Playboard {
 	// bourd struct
 	private Map<Integer, String> board = new HashMap<Integer, String>();
 	private Map<Integer, ArrayList<Integer>> neighbor = new HashMap<Integer, ArrayList<Integer>>();
+	
+	public boolean specialRule = false;
 	
 	// define my board positions
 	private final int UP = 1;
@@ -46,24 +50,36 @@ public class Playboard {
 	}
 	
 	/**
+	 * Getter for playboard
+	 * @return
+	 */
+	public Map getPlayboard() {
+		System.out.println(board);
+		return board;
+	}
+	
+	/**
 	 * Method add a token on board
 	 * @param token - your specific token
 	 * @param boardPosition - 1..9 the position where you want your token
 	 */
-	public void addToken(String token, int toBoardPosition) {
+	public boolean addToken(String token, int toBoardPosition) {
 		// Precondtion
 		if (toBoardPosition > 9 || toBoardPosition < 1) {
-			throw new IllegalArgumentException("A Board Position: fromBoardPosition v toBoardPosition" + " out of box! Legitim positions was 1..9");
+			System.err.println("A Board Position: fromBoardPosition v toBoardPosition" + " out of box! Legitim positions was 1..9");
+			return false;
 		}
 		
 		if ( board.get(toBoardPosition).compareTo(clearToken) != 0 ) {
-			throw new IllegalArgumentException("Board Position: " + toBoardPosition + " is not free");
+			System.err.println("Board Position: " + toBoardPosition + " is not free");
+			return false;
 		}
 		
 		board.put(toBoardPosition, token);
 		
 		// check for winner
 		winner(token);
+		return true;
 	}
 	
 	/**
@@ -71,30 +87,39 @@ public class Playboard {
 	 * @param token - your specific token
 	 * @param boardPosition - 1..9 the position where you want your token
 	 */
-	public void moveToken(String token, int fromBoardPosition, int toBoardPosition) {
+	public boolean moveToken(int fromBoardPosition, int toBoardPosition) {
 		/*
 		 * Preconditions
 		 */
 		if (fromBoardPosition > 9 || fromBoardPosition < 1 || toBoardPosition > 9 || toBoardPosition < 1) {
-			throw new IllegalArgumentException("A Board Position: fromBoardPosition v toBoardPosition" + " out of box! Legitim positions was 1..9");
+			System.err.println("A Board Position: fromBoardPosition v toBoardPosition" + " out of box! Legitim positions was 1..9");
+			return false;
 		}
 		
 		if (toBoardPosition > 9 || toBoardPosition < 1) {
-			throw new IllegalArgumentException("To Board Position: " + toBoardPosition + " out of box! Legitim positions was 1..9");
+			System.err.println("To Board Position: " + toBoardPosition + " out of box! Legitim positions was 1..9");
+			return false;
 		}
 		
-		if ( board.get(fromBoardPosition).compareTo(clearToken) == 0 ) {			
-			throw new IllegalArgumentException("Board Position: " + fromBoardPosition + " have none token!");			
+		if ( board.get(fromBoardPosition).compareTo(clearToken) == 0 ) {
+			System.err.println("Board Position: " + fromBoardPosition + " have none token!");
+			return false;
 		}
 		
 		if ( board.get(toBoardPosition).compareTo(clearToken) != 0 ) {
-			throw new IllegalArgumentException("Board Position: " + toBoardPosition + " is not free");
+			System.err.println("Board Position: " + toBoardPosition + " is not free");
+			return false;
 		}
 		
 		// neighbor check
 		if (!isNeighbor(fromBoardPosition, toBoardPosition)) {
-			throw new IllegalArgumentException("fromBoardPosition and toBoardPosition + (" + fromBoardPosition + ", " + toBoardPosition + ",)  was not neighbors!!!!");
+			System.err.println("fromBoardPosition and toBoardPosition + (" + fromBoardPosition + ", " + toBoardPosition + ",)  was not neighbors!!!!");
+			specialRule = true;
+			return false;
 		}
+		
+		// constitudet token
+		String token = board.get(fromBoardPosition);
 		 
 		// clear old position of token
 		board.put(fromBoardPosition, clearToken);
@@ -104,6 +129,7 @@ public class Playboard {
 		
 		// check for winner
 		winner(token);
+		return true;
 	}
 	
 	/**
@@ -112,22 +138,22 @@ public class Playboard {
 	 * @param token - player token
 	 */
 	private void winner(String token) {
-		String winnerText = "Player with token: " + token + " is the winner!!!!!!!!!!!!!!!!!!!";
+		String winnerText = "Player with'" + token +"' token is the winner!!!!!!!!!!!!!!!!!!!";
 		
 		if ( board.get(UP).compareTo(token) == 0 && board.get(MIDDLE).compareTo(token) == 0 && board.get(DOWN).compareTo(token) == 0) {
-			System.out.println(winnerText);
+			System.err.println(winnerText);
 		}
 		
 		if ( board.get(UP_LEFT).compareTo(token) == 0 && board.get(MIDDLE).compareTo(token) == 0 && board.get(DOWN_RIGHT).compareTo(token) == 0) {
-			System.out.println(winnerText);
+			System.err.println(winnerText);
 		}
 		
 		if ( board.get(UP_RIGHT).compareTo(token) == 0 && board.get(MIDDLE).compareTo(token) == 0 && board.get(DOWN_LEFT).compareTo(token) == 0) {
-			System.out.println(winnerText);
+			System.err.println(winnerText);
 		}
 		
 		if ( board.get(LEFT).compareTo(token) == 0 && board.get(MIDDLE).compareTo(token) == 0 && board.get(RIGHT).compareTo(token) == 0) {
-			System.out.println(winnerText);
+			System.err.println(winnerText);
 		}
 		
 	}
@@ -189,25 +215,4 @@ public class Playboard {
 		}
 	}
 	
-	public static void main(String[] args) {
-		Playboard p = new Playboard();
-		p.initializeBoard();
-		System.out.println(p.board);
-		
-		p.addToken("X", 1);
-		p.addToken("Y", 8);
-		p.addToken("Y", 4);
-		p.addToken("Y", 9);
-		
-		p.addToken("X", 3);
-		
-		System.out.println(p.board);
-		
-		//p.moveToken("X", 3, 4);
-		
-		
-		
-		System.out.println(p.board);
-		System.out.println(p.neighbor);
-	}
 }
