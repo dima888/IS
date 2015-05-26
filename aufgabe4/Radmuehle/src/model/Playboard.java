@@ -3,8 +3,8 @@ package model;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * This is our playboard for the game "Radmuehle"
@@ -51,11 +51,33 @@ public class Playboard {
 	
 	/**
 	 * Getter for playboard
-	 * @return
+	 * @return Map
 	 */
-	public Map getPlayboard() {
+	public Map<Integer, String> getPlayboard() {
 		System.out.println(board);
 		return board;
+	}
+	
+	/**
+	 * Method give you count of free positions
+	 * @return int
+	 */
+	public int getFreePositionCount() {		
+		int count = 0;		
+		for (Entry<Integer, String> elem : board.entrySet()) {
+			if (elem.getValue().compareTo(clearToken) == 0)  {
+				count ++;
+			}
+		}
+		return count;
+	}
+	
+	/**
+	 * Method get the clear token 
+	 * @return String
+	 */
+	public String getClearToken() {
+		return clearToken;
 	}
 	
 	/**
@@ -214,5 +236,4 @@ public class Playboard {
 			neighbor.put(RIGHT, new ArrayList<>(Arrays.asList(DOWN_RIGHT, UP_RIGHT, MIDDLE)));
 		}
 	}
-	
 }
