@@ -47,6 +47,22 @@ public class Tree {
 		System.err.println("Node with ID: " + id + " was not found");
 		return null;
 	}
+	
+	/**
+	 * Method get you the deepest value of tree
+	 * @return
+	 */
+	public int getMaxDeep() {
+		int maxDeep = 0;
+		
+		for (Node node : tree) {
+			int currentNodeDeep = node.getDeep();
+			if ( currentNodeDeep> maxDeep ) {
+				maxDeep = currentNodeDeep;
+			}	
+		}
+		return maxDeep;
+	}
 		
 	/**
 	 * Tree add a node
@@ -97,20 +113,14 @@ public class Tree {
 		if ( board.getFreePositionCount() >= 6 ) {
 			// Jump token status
 			
-			
 		} else {
 			// insert token status
 			
-			int nodesCount = board.getFreePositionCount();
-			
-			
+			int nodesCount = board.getFreePositionCount();	
 		}
 		
 		return tree;
 	}
-	
-	
-	
 	
 	/**
 	 * Method give you count of free positions
@@ -123,6 +133,9 @@ public class Tree {
 				
 		for (Entry<Integer, String> elem : board_struct.entrySet()) {
 			if (elem. getValue().compareTo(board.getClearToken()) == 0)  {
+				
+				// max deep of tree
+				int maxDeep = getMaxDeep();
 				
 				// create legitim nodes
 				Node currentNode = createNode();
