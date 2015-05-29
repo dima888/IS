@@ -12,6 +12,9 @@ import model.Playboard;
  * @author foxhound
  */
 public class Tree {
+	
+	private String player_1_token = "Red";
+	private String player_2_token = "Blue";
 
 	// struct to save of nodes
 	List<Node> tree = new ArrayList<Node>();
@@ -19,7 +22,12 @@ public class Tree {
 	// node ids
 	private int node_id = 1;
 	
-	private int undefined  = 77777777;				
+	private int undefined  = 77777777;		
+	
+	private Node root_node = null;
+	
+	// deepest node a our tree
+	Node deepestNode = null;
 	
 	/**
 	 * Constructor
@@ -50,7 +58,7 @@ public class Tree {
 	
 	/**
 	 * Method get you the deepest value of tree
-	 * @return
+	 * @return int
 	 */
 	public int getMaxDeep() {
 		int maxDeep = 0;
@@ -63,6 +71,22 @@ public class Tree {
 		}
 		return maxDeep;
 	}
+	
+	
+	/**
+	 * Method get you all nodes in a deep
+	 * @param deep - deep of tree
+	 * @return List<Node>
+	 */
+	public List<Node> getNodes(int deep) {
+		List<Node> result = new ArrayList<Node>();		
+		for (Node node : tree) {
+			if (node.getDeep() == deep) {
+				result.add(node);
+			}
+		}		
+		return result;		
+	}
 		
 	/**
 	 * Tree add a node
@@ -73,6 +97,18 @@ public class Tree {
 		node_id ++ ;
 		
 		Node node = createNode();		
+		setAttributes(node, node_id, parent_id, getNode(parent_id).getDeep() + 1, board_position);
+		tree.add(node);
+	}
+	
+	/**
+	 * Method add a node under the parent id
+	 * @param parent_id
+	 * @param board_position - 
+	 * @param node - node some you want add
+	 */
+	public void add(int parent_id, int board_position, Node node) {
+		node_id ++ ;
 		setAttributes(node, node_id, parent_id, getNode(parent_id).getDeep() + 1, board_position);
 		tree.add(node);
 	}
@@ -105,44 +141,172 @@ public class Tree {
 	 * @param board - Playboard Object
 	 * @param deep -  Max deep of this tree
 	 */
-	public List<Node> generateTree(Playboard board, int deep) {
+	public List<Node> generateTree(Playboard board, int deep) {		
+		deep--;
 		
-		// to get the struct of board
-		Map<Integer, String> board_struct = board.getPlayboard();
+		// edit root
+		root_node.setPlayboard(board);
 		
-		if ( board.getFreePositionCount() >= 6 ) {
-			// Jump token status
+		int runs = 0;
+		
+		// player ident
+		String playerToken = "";
+		
+		// condition for right deep of tree
+		while (runs++ < deep) {
+						
 			
-		} else {
-			// insert token status
+			if (runs % 2 != 0) {
+				playerToken = player_1_token;
+			} else {
+				playerToken = player_2_token;
+			}
 			
-			int nodesCount = board.getFreePositionCount();	
-		}
-		
+			// free position in board allow! 3 => 3 positions was clear!
+			if ( deepestNode.getPlayboard().getFreePositionCount() <= 3 ) {
+				// Jump token status
+				
+				generateNodes(board, runs, playerToken, true);
+								
+				System.err.println("hier? JETZT WIRD GESCHOBEN1111111111111111111111111");
+				
+				
+			} else {
+				// insert token status						
+				
+				// generate nodes
+				generateNodes(board, runs, playerToken, false);			
+			}
+		}			
 		return tree;
 	}
 	
 	/**
-	 * Method give you count of free positions
-	 * @return List<Node>
+	 * Helper Method for generateTree
+	 * Method add nodes in our tree
+	 * @param status - if true -> move status else insert status
+	 * @return List<Node> - 
 	 */
-	private List<Node> generateNodes(Playboard board, int parentNodeID) {
+	private void generateNodes(Playboard board, int currentDeep, String playerToken, boolean status) {		
+
+		// run over all nodes in a deep
+		List<Node> nodeList = getNodes(currentDeep);		
+		for (Node node : nodeList) {			
+			// allocate all positions in board 			
+			if (status) {
+				
+				// TODO: In work 
+				allocateAllPositionsWithMove(node, playerToken);
+				
+				
+			} else {
+				allocateAllPositions(node, playerToken);
+			}						
+		}
+	}
+	
+	/**
+	 * Helper for generateNodes move status
+	 * @param node
+	 * @param playerToken
+	 */
+	private void allocateAllPositionsWithMove(Node node, String playerToken) {
 		
-		List<Node> result = new ArrayList<Node>();
-		Map<Integer, String> board_struct = board.getPlayboard();
+		// positions of my tokens
+		List<Integer> fromMeSetTokenPositions = new ArrayList<Integer>();		
+		
+		// run over the board from current node and fill fromMeSetTokenPositions
+		for (Entry<Integer, String> elem : node.getPlayboard().getPlayboard().entrySet()) {
+			
+			// suplly from me set tokens
+			if ( elem.getValue() == playerToken ) {
+				fromMeSetTokenPositions.add(elem.getKey());				
+			}			
+		}
+		
+		
+		for (Integer current_board_position : fromMeSetTokenPositions) {
+			// suplly neighbors to current_board_position
+			List<Integer> allNeighbors = node.getPlayboard().getNeighbors(current_board_position);
+			
+			// suplly legitim neighbors to current_board_position
+			List<Integer> legitimNeighbors = new ArrayList<Integer>();
+			
+			// filter for only accessible/legitim positions
+			for (Integer current_neighbor_position : allNeighbors) {
 				
-		for (Entry<Integer, String> elem : board_struct.entrySet()) {
-			if (elem. getValue().compareTo(board.getClearToken()) == 0)  {
+				if (node.getPlayboard().getPlayboard().get(current_neighbor_position).compareTo(node.getPlayboard().getClearToken()) == 0) {
+					legitimNeighbors.add(current_neighbor_position);
+				}
+			}
+			
+			// create new nodes, how we have neighbors to a current_board_position
+			for (Integer currentNeighbor : legitimNeighbors) {
 				
-				// max deep of tree
-				int maxDeep = getMaxDeep();
+				// initialize new board for new node
+				Playboard modifyBoard = node.getPlayboard().getCopy();
+				
+				// Move the token on other, but legitim position
+				modifyBoard.moveToken(current_board_position, currentNeighbor);
 				
 				// create legitim nodes
 				Node currentNode = createNode();
+				currentNode.setDeep(node.getDeep() + 1);					
+				currentNode.setPlayboard(modifyBoard);
+				currentNode.setParentID(node.getID());
 				
+				// set deepest node
+				deepestNode = currentNode;
+				
+				// add a node in our tree
+				add(node.getID(), currentNeighbor, currentNode);				
 			}
 		}
-		return result;
+		
+	}
+
+	/**
+	 * Helper Method for generateNodes insert status 
+	 * @param node - 
+	 * @param board - 
+	 * @param token - 
+	 */
+	private void allocateAllPositions(Node node, String token) {		
+		
+		// not allowed position list
+		List<Integer> visitPositions = new ArrayList<Integer>();				
+		
+		// run over the board from current node
+		for (Entry<Integer, String> elem : node.getPlayboard().getPlayboard().entrySet()) {
+			
+			// modifiy board only, if this position was clear!
+			if (elem. getValue().compareTo(node.getPlayboard().getClearToken()) == 0)  {
+				
+				if ( (!visitPositions.contains(elem.getKey()) ) ) {
+					
+					// initialize new board
+					Playboard modifyBoard = node.getPlayboard().getCopy();											
+					
+					// add token and to mark this step
+					modifyBoard.addToken(token, elem.getKey());
+					
+					// save visited position
+					visitPositions.add(elem.getKey());
+																	
+					// create legitim nodes
+					Node currentNode = createNode();
+					currentNode.setDeep(node.getDeep() + 1);					
+					currentNode.setPlayboard(modifyBoard);
+					currentNode.setParentID(node.getID());
+					
+					// set deepest node
+					deepestNode = currentNode;
+					
+					// add a node in our tree
+					add(node.getID(), elem.getKey(), currentNode);
+				}											
+			}
+		}
 	}
 			
 	/**
@@ -155,21 +319,40 @@ public class Tree {
 		rootNode.setChildren(null);
 		rootNode.setID(node_id);
 		rootNode.setBoardPosition(undefined);
+		Playboard board = new Playboard();
+		board.initializeBoard();
+		rootNode.setPlayboard(board);				
 		tree.add(rootNode);
+		root_node = rootNode;
+		deepestNode = root_node;
 	}
 	
 	
 	public static void main(String[] args) {
 		Tree tree = new Tree();
+
+		Playboard p = new Playboard();
+		p.initializeBoard();
 		
-		tree.addNewNode(1, 2);
-		tree.addNewNode(1, 7);
-		tree.addNewNode(2, 3);
-		tree.addNewNode(4, 4);
+//		p.addToken("Red", 1);
+//		
+//		p.addToken("Blue", 2);
+//		
+//		p.addToken("Red", 3);
+//		
+//		p.addToken("Blue", 4);
+//		
+//		p.addToken("Red", 5);
+//		
+//		p.addToken("Blue", 6);
+//		
 		
+		
+		tree.generateTree(p ,2);				
 		System.out.println(tree.tree);
 	}
 }
+
 
 
 

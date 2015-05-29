@@ -3,6 +3,8 @@ package adt;
 import java.util.ArrayList;
 import java.util.List;
 
+import model.Playboard;
+
 public class Node {	
 
 	private int id;
@@ -11,6 +13,8 @@ public class Node {
 	private int board_position;
 	private int deep;
 	private int undefined  = 77777777;	
+	
+	private Playboard board;
 	
 	/**
 	 * Method give your node id
@@ -42,6 +46,14 @@ public class Node {
 	 */
 	public int getParentID() {
 		return parent_id;
+	}
+	
+	/**
+	 * Method get you the playboard
+	 * @return Playboard
+	 */
+	public Playboard getPlayboard() {
+		return board;
 	}
 	
 	/**
@@ -93,12 +105,20 @@ public class Node {
 		this.deep = deep;
 	}
 	
+	/**
+	 * Setter for playboard
+	 * @param board
+	 */
+	public void setPlayboard(Playboard board) {
+		this.board = board;
+	}
+	
 	@Override
 	public String toString() {
 		if ( board_position == undefined) {
-			return  " [ID: " + id + ", ParentID: Root" + ", Deep: " + deep + ", BoardPosition: Undefine]" + "\n" ;
+			return  " [ID: " + id + ", ParentID: Root" + ", Deep: " + deep + ", BoardPosition: Undefine]" + ", Playboard: " + getPlayboard() +  "\n" ;
 		}
-		return " [ID: " + id + ", ParentID: " + parent_id + ", Deep: " + deep + ", BoardPosition: " + board_position + "]" + "\n";		
+		return " [ID: " + id + ", ParentID: " + parent_id + ", Deep: " + deep + ", BoardPosition: " + board_position + "]" +  ", Playboard: " + getPlayboard() + "\n";		
 	}
 }
 

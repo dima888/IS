@@ -3,6 +3,7 @@ package model;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -54,8 +55,17 @@ public class Playboard {
 	 * @return Map
 	 */
 	public Map<Integer, String> getPlayboard() {
-		System.out.println(board);
+		//System.out.println(board);
 		return board;
+	}
+	
+	/**
+	 * Method get you a list with neighbors position to a position
+	 * @param position - your current position
+	 * @return List<Integer>
+	 */
+	public List<Integer> getNeighbors(int position) {
+		return neighbor.get(position);
 	}
 	
 	/**
@@ -78,6 +88,28 @@ public class Playboard {
 	 */
 	public String getClearToken() {
 		return clearToken;
+	}
+	
+	/**
+	 * Method create a copy of this object
+	 * @return
+	 */
+	public Playboard getCopy() {
+		
+		Playboard result = new Playboard();
+		result.initializeBoard();
+		
+		for (Entry<Integer, String> elem : board.entrySet()) {
+			
+			if (elem. getValue().compareTo(getClearToken()) != 0)  {				
+				result.addToken(elem.getValue(), elem.getKey());				
+			}			
+		}				
+		return result;
+	}
+	
+	public void setPlayboard(Map<Integer, String> board) {
+		this.board = board;
 	}
 	
 	/**
@@ -235,5 +267,10 @@ public class Playboard {
 		if ( position == RIGHT ) {
 			neighbor.put(RIGHT, new ArrayList<>(Arrays.asList(DOWN_RIGHT, UP_RIGHT, MIDDLE)));
 		}
+	}
+	
+	@Override
+	public String toString() {
+		return board.toString();
 	}
 }
