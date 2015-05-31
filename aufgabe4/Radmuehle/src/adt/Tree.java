@@ -2,9 +2,9 @@ package adt;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
+import algorithm.Minimax;
 import model.Playboard;
 
 /**
@@ -35,6 +35,7 @@ public class Tree {
 	public Tree() {		
 		// add the root node
 		createAndAddRootNode();
+		//root_node.setPlayboard(board);
 	}
 
 //============================================================================================================
@@ -54,6 +55,10 @@ public class Tree {
 		}	
 		System.err.println("Node with ID: " + id + " was not found");
 		return null;
+	}
+	
+	public List<Node>getStruct() {
+		return tree;
 	}
 	
 	/**
@@ -96,6 +101,10 @@ public class Tree {
 	public void addNewNode(int parent_id, int board_position) {
 		node_id ++ ;
 		
+		// set the childeren
+		Node parent_node = getNode(parent_id);
+		parent_node.setChildren(node_id);		
+		
 		Node node = createNode();		
 		setAttributes(node, node_id, parent_id, getNode(parent_id).getDeep() + 1, board_position);
 		tree.add(node);
@@ -109,6 +118,11 @@ public class Tree {
 	 */
 	public void add(int parent_id, int board_position, Node node) {
 		node_id ++ ;
+		
+		// set the childeren
+		Node parent_node = getNode(parent_id);
+		parent_node.setChildren(node_id);
+		
 		setAttributes(node, node_id, parent_id, getNode(parent_id).getDeep() + 1, board_position);
 		tree.add(node);
 	}
@@ -177,7 +191,7 @@ public class Tree {
 				// generate nodes
 				generateNodes(board, runs, playerToken, false);			
 			}
-		}			
+		}							
 		return tree;
 	}
 	
@@ -193,12 +207,8 @@ public class Tree {
 		List<Node> nodeList = getNodes(currentDeep);		
 		for (Node node : nodeList) {			
 			// allocate all positions in board 			
-			if (status) {
-				
-				// TODO: In work 
-				allocateAllPositionsWithMove(node, playerToken);
-				
-				
+			if (status) {		
+				allocateAllPositionsWithMove(node, playerToken);								
 			} else {
 				allocateAllPositions(node, playerToken);
 			}						
@@ -216,7 +226,7 @@ public class Tree {
 		List<Integer> fromMeSetTokenPositions = new ArrayList<Integer>();		
 		
 		// run over the board from current node and fill fromMeSetTokenPositions
-		for (Entry<Integer, String> elem : node.getPlayboard().getPlayboard().entrySet()) {
+		for (Entry<Integer, String> elem : node.getPlayboard().getStruct().entrySet()) {
 			
 			// suplly from me set tokens
 			if ( elem.getValue() == playerToken ) {
@@ -235,7 +245,7 @@ public class Tree {
 			// filter for only accessible/legitim positions
 			for (Integer current_neighbor_position : allNeighbors) {
 				
-				if (node.getPlayboard().getPlayboard().get(current_neighbor_position).compareTo(node.getPlayboard().getClearToken()) == 0) {
+				if (node.getPlayboard().getStruct().get(current_neighbor_position).compareTo(node.getPlayboard().getClearToken()) == 0) {
 					legitimNeighbors.add(current_neighbor_position);
 				}
 			}
@@ -277,7 +287,7 @@ public class Tree {
 		List<Integer> visitPositions = new ArrayList<Integer>();				
 		
 		// run over the board from current node
-		for (Entry<Integer, String> elem : node.getPlayboard().getPlayboard().entrySet()) {
+		for (Entry<Integer, String> elem : node.getPlayboard().getStruct().entrySet()) {
 			
 			// modifiy board only, if this position was clear!
 			if (elem. getValue().compareTo(node.getPlayboard().getClearToken()) == 0)  {
@@ -316,12 +326,12 @@ public class Tree {
 		Node rootNode = createNode();
 		rootNode.setDeep(1);
 		rootNode.setParentID(undefined);
-		rootNode.setChildren(null);
+		//rootNode.setChildren(-1);
 		rootNode.setID(node_id);
 		rootNode.setBoardPosition(undefined);
-		Playboard board = new Playboard();
-		board.initializeBoard();
-		rootNode.setPlayboard(board);				
+//		Playboard board = new Playboard();
+//		board.initializeBoard();
+//		rootNode.setPlayboard(board);				
 		tree.add(rootNode);
 		root_node = rootNode;
 		deepestNode = root_node;
@@ -329,27 +339,53 @@ public class Tree {
 	
 	
 	public static void main(String[] args) {
-		Tree tree = new Tree();
-
-		Playboard p = new Playboard();
-		p.initializeBoard();
-		
-//		p.addToken("Red", 1);
+//		Tree tree = new Tree();
+//
+//		Playboard p = new Playboard();
+//		p.initializeBoard();
+//	
+//		tree.generateTree(p, 2);
 //		
-//		p.addToken("Blue", 2);
+////		p.addToken("Red", 1);
+////		
+////		p.addToken("Blue", 2);
+////		
+////		p.addToken("Red", 3);
+////		
+////		p.addToken("Blue", 4);
+////		
+////		p.addToken("Red", 5);
+////		
+////		p.addToken("Blue", 6);
+////		
+//		//tree.generateTree(p ,4);
 //		
-//		p.addToken("Red", 3);
+////		tree.addNewNode(1, -1); // a
+////		tree.addNewNode(1, -1); // b
+////		
+////		tree.addNewNode(2, -1); // a + c
+////		tree.addNewNode(2, -1);	// a + d			
+////		
+////		tree.addNewNode(3, -1); // b + e
+////		tree.addNewNode(3, -1); // b + f
+////		
+////		tree.addNewNode(4, -1); // c + g
+////		tree.addNewNode(4, -1); // c + h
+////		
+////		tree.addNewNode(5, -1); // d + i
+////		tree.addNewNode(5, -1); // d + j
 //		
-//		p.addToken("Blue", 4);
+//		System.out.println(tree.tree);
+//	
+//		Minimax m = new Minimax(tree);
 //		
-//		p.addToken("Red", 5);
 //		
-//		p.addToken("Blue", 6);
+//		int res = m.maxAB(tree.getNode(1), tree.getNode(1).getAlpha(), tree.getNode(1).getBeta());
+//		System.out.println(tree.tree);
+//		//int res2 = m.minAB(tree.getNode(1),tree.getNode(1).getAlpha(), tree.getNode(1).getBeta());
 //		
-		
-		
-		tree.generateTree(p ,2);				
-		System.out.println(tree.tree);
+//		System.out.println(res); 
+//		//System.out.println(res2);
 	}
 }
 

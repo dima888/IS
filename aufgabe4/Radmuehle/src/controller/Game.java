@@ -7,6 +7,8 @@ import java.util.Map;
 
 import javax.swing.JButton;
 
+import adt.Tree;
+import algorithm.Minimax;
 import model.Playboard;
 
 /**
@@ -18,6 +20,8 @@ import model.Playboard;
 public class Game {
 	
 	private Playboard board;
+	private Minimax minimax;
+	private Tree tree;
 	
 	// old color
 	private Color old_color;
@@ -34,11 +38,27 @@ public class Game {
 	private String player_1_token = "";
 	private String player_2_token = "";
 	
+	Color color_p1 = Color.RED;
+	Color color_p2 = Color.CYAN;
+	
 	List<JButton> jButtonList = new ArrayList<JButton>();
 	
 	public Game(String player_1_color, String player_2_color) {
 		board = new Playboard();
 		board.initializeBoard();
+						
+		tree = new Tree();
+		minimax = new Minimax(tree);
+		
+		
+		System.out.println(tree.getStruct());
+		
+		tree.generateTree(board, 2);
+		
+		System.out.println(minimax.maxAB(tree.getNode(1), tree.getNode(1).getAlpha(), tree.getNode(1).getBeta()));
+		
+		
+		
 		
 		// set the player tokens
 		player_1_token = player_1_color;
@@ -50,7 +70,7 @@ public class Game {
 	 * @return
 	 */
 	public String getInfo() {
-		return "";
+		return board.getCurrentMessage();
 	}
 	
 	/**
@@ -97,7 +117,20 @@ public class Game {
 			}
 		}
 		
-		board.getPlayboard();
+		tree.generateTree(board, 2);
+		System.out.println(tree.getStruct());
+		
+		//try {Thread.sleep(104000);} catch (InterruptedException e) {e.printStackTrace();}
+		
+		int best_value = minimax.maxAB(tree.getNode(1), tree.getNode(1).getAlpha(), tree.getNode(1).getBeta());		
+		System.out.println(best_value);
+		
+		System.out.println(board.getStruct());
+		System.out.println(tree.getStruct());
+		
+		
+		
+		//board.getStruct();
 		return true;
 	}
 	
@@ -107,8 +140,8 @@ public class Game {
 	 * @param toBoardPosition
 	 */
 	public boolean setToken(JButton jButton) {
-		
-		int toBoardPosition = Integer.parseInt(jButton.getText());				
+								
+		int toBoardPosition = giveBoardPosition(jButton);				
 							
 		if (getCurrentPlayerSetToken()) {
 			// player 1 code
@@ -116,7 +149,7 @@ public class Game {
 				// exception, do nothing
 				return false;
 			}
-			jButton.setBackground(Color.RED);
+			jButton.setBackground(color_p1);
 			
 			player_1_tokens --;		
 
@@ -126,11 +159,20 @@ public class Game {
 				// exception, do nothing
 				return false;
 			}
-			jButton.setBackground(Color.BLUE);
+			jButton.setBackground(color_p2);
 			
 			player_2_tokens--;
 		}							
 		return true;
+	}
+	
+	private int giveBoardPosition(JButton jButton) {		
+		String button_value = jButton.getText();
+		
+		if ( jButton.getText().length() > 1 ) {
+			button_value = Character.toString(jButton.getText().charAt(0));
+		}		
+		return Integer.parseInt(button_value);
 	}
 	
 	/**
@@ -148,7 +190,7 @@ public class Game {
 			if (getCurrentPlayerMoveToken()) {
 				
 				// precondtion
-				if (old_color != Color.RED) {
+				if (old_color != color_p1) {
 					System.err.println("Its not your move!!!");
 					jButtonList.get(0).setBackground(old_color);
 					
@@ -161,11 +203,11 @@ public class Game {
 					jButtonList = new ArrayList<JButton>();	
 					return false;
 				} 				
-				jButton.setBackground(Color.RED);
+				jButton.setBackground(color_p1);
 				
 			} else {
 				
-				if (old_color != Color.BLUE) {
+				if (old_color != color_p2) {
 					System.err.println("Its not your move!!!");
 					jButtonList.get(0).setBackground(old_color);
 					
@@ -178,11 +220,15 @@ public class Game {
 					jButtonList = new ArrayList<JButton>();	
 					return false;
 				} 
-				jButton.setBackground(Color.BLUE);
+				jButton.setBackground(color_p2);
 			}
 			
+			
+			
+			
 			// move in struct
-			if (!board.moveToken(Integer.parseInt(jButtonList.get(0).getText()), Integer.parseInt(jButtonList.get(1).getText()))) {								
+			//if (!board.moveToken(Integer.parseInt(jButtonList.get(0).getText()), Integer.parseInt(jButtonList.get(1).getText()))) {
+			if (!board.moveToken(giveBoardPosition(jButtonList.get(0)), giveBoardPosition(jButtonList.get(1)))) {
 				// // exception! set white color back of 
 				jButtonList.get(0).setBackground(old_color);
 				
@@ -214,6 +260,6 @@ public class Game {
 	 * @return
 	 */
 	public Map getPlayboard() {
-		return board.getPlayboard();
+		return board.getStruct();
 	}
 }

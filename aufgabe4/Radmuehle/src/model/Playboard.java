@@ -38,6 +38,8 @@ public class Playboard {
 	private final int DOWN_LEFT = 6;
 	private final int DOWN_RIGHT = 4;
 	
+	private String currentMessage = "";
+	
 	// define boards token
 	private String clearToken = "clear";
 
@@ -50,13 +52,57 @@ public class Playboard {
 		}
 	}
 	
+	public int getUP() {
+		return UP;
+	}
+
+	public int getUP_LEFT() {
+		return UP_LEFT;
+	}
+
+	public int getUP_RIGHT() {
+		return UP_RIGHT;
+	}
+
+	public int getLEFT() {
+		return LEFT;
+	}
+
+	public int getMIDDLE() {
+		return MIDDLE;
+	}
+
+	public int getRIGHT() {
+		return RIGHT;
+	}
+
+	public int getDOWN() {
+		return DOWN;
+	}
+
+	public int getDOWN_LEFT() {
+		return DOWN_LEFT;
+	}
+
+	public int getDOWN_RIGHT() {
+		return DOWN_RIGHT;
+	}
+
 	/**
 	 * Getter for playboard
 	 * @return Map
 	 */
-	public Map<Integer, String> getPlayboard() {
+	public Map<Integer, String> getStruct() {
 		//System.out.println(board);
 		return board;
+	}
+	
+	/**
+	 * Method get you the current message of the game
+	 * @return
+	 */
+	public String getCurrentMessage() {
+		return currentMessage;
 	}
 	
 	/**
@@ -120,12 +166,14 @@ public class Playboard {
 	public boolean addToken(String token, int toBoardPosition) {
 		// Precondtion
 		if (toBoardPosition > 9 || toBoardPosition < 1) {
-			System.err.println("A Board Position: fromBoardPosition v toBoardPosition" + " out of box! Legitim positions was 1..9");
+			currentMessage = "A Board Position: fromBoardPosition v toBoardPosition" + " out of box! Legitim positions was 1..9";
+			System.err.println(currentMessage);
 			return false;
 		}
 		
 		if ( board.get(toBoardPosition).compareTo(clearToken) != 0 ) {
-			System.err.println("Board Position: " + toBoardPosition + " is not free");
+			currentMessage = "Board Position: " + toBoardPosition + " is not free";
+			System.err.println(currentMessage);
 			return false;
 		}
 		
@@ -146,12 +194,14 @@ public class Playboard {
 		 * Preconditions
 		 */
 		if (fromBoardPosition > 9 || fromBoardPosition < 1 || toBoardPosition > 9 || toBoardPosition < 1) {
-			System.err.println("A Board Position: fromBoardPosition v toBoardPosition" + " out of box! Legitim positions was 1..9");
+			currentMessage = "A Board Position: fromBoardPosition v toBoardPosition" + " out of box! Legitim positions was 1..9";
+			System.err.println(currentMessage);
 			return false;
 		}
 		
 		if (toBoardPosition > 9 || toBoardPosition < 1) {
-			System.err.println("To Board Position: " + toBoardPosition + " out of box! Legitim positions was 1..9");
+			currentMessage = "To Board Position: " + toBoardPosition + " out of box! Legitim positions was 1..9";
+			System.err.println(currentMessage);
 			return false;
 		}
 		
@@ -161,13 +211,15 @@ public class Playboard {
 		}
 		
 		if ( board.get(toBoardPosition).compareTo(clearToken) != 0 ) {
-			System.err.println("Board Position: " + toBoardPosition + " is not free");
+			currentMessage = "Board Position: " + toBoardPosition + " is not free";
+			System.err.println(currentMessage);
 			return false;
 		}
 		
 		// neighbor check
 		if (!isNeighbor(fromBoardPosition, toBoardPosition)) {
-			System.err.println("fromBoardPosition and toBoardPosition + (" + fromBoardPosition + ", " + toBoardPosition + ",)  was not neighbors!!!!");
+			currentMessage = "fromBoardPosition and toBoardPosition + (" + fromBoardPosition + ", " + toBoardPosition + ",)  was not neighbors!!!!";
+			System.err.println(currentMessage);
 			specialRule = true;
 			return false;
 		}
@@ -195,19 +247,23 @@ public class Playboard {
 		String winnerText = "Player with'" + token +"' token is the winner!!!!!!!!!!!!!!!!!!!";
 		
 		if ( board.get(UP).compareTo(token) == 0 && board.get(MIDDLE).compareTo(token) == 0 && board.get(DOWN).compareTo(token) == 0) {
-			System.err.println(winnerText);
+			currentMessage = winnerText;
+			System.err.println(currentMessage);
 		}
 		
 		if ( board.get(UP_LEFT).compareTo(token) == 0 && board.get(MIDDLE).compareTo(token) == 0 && board.get(DOWN_RIGHT).compareTo(token) == 0) {
-			System.err.println(winnerText);
+			currentMessage = winnerText;
+			System.err.println(currentMessage);
 		}
 		
 		if ( board.get(UP_RIGHT).compareTo(token) == 0 && board.get(MIDDLE).compareTo(token) == 0 && board.get(DOWN_LEFT).compareTo(token) == 0) {
-			System.err.println(winnerText);
+			currentMessage = winnerText;
+			System.err.println(currentMessage);
 		}
 		
 		if ( board.get(LEFT).compareTo(token) == 0 && board.get(MIDDLE).compareTo(token) == 0 && board.get(RIGHT).compareTo(token) == 0) {
-			System.err.println(winnerText);
+			currentMessage = winnerText;
+			System.err.println(currentMessage);
 		}
 		
 	}

@@ -19,6 +19,8 @@ import controller.Game;
 public class PlayboardView extends javax.swing.JFrame {
 	
 	private Game game;
+	
+	private int button_width = 45;
 
     /**
      * Creates new form NewJFrame
@@ -51,90 +53,90 @@ public class PlayboardView extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(null);
 
-        jButton1.setText("1");
+        jButton1.setText("1/f");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
             }
         });
         getContentPane().add(jButton1);
-        jButton1.setBounds(221, 65, 39, 23);
+        jButton1.setBounds(221, 65, button_width, 23);
 
-        jButton2.setText("2");
+        jButton2.setText("2/g");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
             }
         });
         getContentPane().add(jButton2);
-        jButton2.setBounds(330, 120, 39, 23);
+        jButton2.setBounds(330, 120, button_width, 23);
 
-        jButton3.setText("3");
+        jButton3.setText("3/h");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton3ActionPerformed(evt);
             }
         });
         getContentPane().add(jButton3);
-        jButton3.setBounds(370, 200, 39, 23);
+        jButton3.setBounds(370, 200, button_width, 23);
         
 
 
-        jButton4.setText("4");
+        jButton4.setText("4/i");
         jButton4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton4ActionPerformed(evt);
             }
         });
         getContentPane().add(jButton4);
-        jButton4.setBounds(310, 290, 39, 23);
+        jButton4.setBounds(310, 290, button_width, 23);
 
-        jButton5.setText("5");
+        jButton5.setText("5/b");
         jButton5.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton5ActionPerformed(evt);
             }
         });
         getContentPane().add(jButton5);
-        jButton5.setBounds(220, 340, 39, 23);
+        jButton5.setBounds(220, 340, button_width, 23);
 
-        jButton6.setText("6");
+        jButton6.setText("6/c");
         jButton6.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton6ActionPerformed(evt);
             }
         });
         getContentPane().add(jButton6);
-        jButton6.setBounds(140, 290, 39, 23);
+        jButton6.setBounds(140, 290, button_width, 23);
 
-        jButton7.setText("7");
+        jButton7.setText("7/d");
         jButton7.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton7ActionPerformed(evt);
             }
         });
         getContentPane().add(jButton7);
-        jButton7.setBounds(70, 190, 39, 23);
+        jButton7.setBounds(70, 190, button_width, 23);
 
-        jButton8.setText("8");
+        jButton8.setText("8/e");
         jButton8.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton8ActionPerformed(evt);
             }
         });
         getContentPane().add(jButton8);
-        jButton8.setBounds(110, 120, 39, 23);
+        jButton8.setBounds(110, 120, button_width, 23);
 
-        jButton9.setText("9");
+        jButton9.setText("9/a");
         jButton9.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton9ActionPerformed(evt);
             }
         });
         getContentPane().add(jButton9);
-        jButton9.setBounds(220, 200, 39, 23);
+        jButton9.setBounds(220, 200, button_width, 23);
         
-        infoLabel.setText("Info:");
+
         getContentPane().add(infoLabel);
         infoLabel.setBounds(40, 424, 870, 20);
 
@@ -142,39 +144,57 @@ public class PlayboardView extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
     
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {      	
-    	game.doStep(jButton1);    	
+    	game.doStep(jButton1);    
+    	infoLabel.setText(game.getInfo());
+    	infoLabel.updateUI();
    	}
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {
     	game.doStep(jButton2);
+    	infoLabel.setText(game.getInfo());
+    	infoLabel.updateUI();
     }
     
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {                                         
     	game.doStep(jButton3);
+    	infoLabel.setText(game.getInfo());
+    	infoLabel.updateUI();
     }  
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {
-    	game.doStep(jButton4); 
+    	game.doStep(jButton4);
+    	infoLabel.setText(game.getInfo());
+    	infoLabel.updateUI();
     }
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {
     	game.doStep(jButton5); 
+    	infoLabel.setText(game.getInfo());
+    	infoLabel.updateUI();
     }
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {
     	game.doStep(jButton6);
+    	infoLabel.setText(game.getInfo());
+    	infoLabel.updateUI();
     }
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {
     	game.doStep(jButton7); 
+    	infoLabel.setText(game.getInfo());
+    	infoLabel.updateUI();
     }
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {
     	game.doStep(jButton8); 
+    	infoLabel.setText(game.getInfo());
+    	infoLabel.updateUI();
     }
 
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {
     	game.doStep(jButton9); 
+    	infoLabel.setText(game.getInfo());
+    	infoLabel.updateUI();
     }
         
     

@@ -5,6 +5,11 @@ import java.util.List;
 
 import model.Playboard;
 
+/**
+ * This is the Node class, the Tree.java and Minimax.java use this class only!
+ * @author foxhound
+ *
+ */
 public class Node {	
 
 	private int id;
@@ -13,6 +18,10 @@ public class Node {
 	private int board_position;
 	private int deep;
 	private int undefined  = 77777777;	
+	private int alpha = -999_999_999;
+	private int beta = 999_999_999;	
+	private int assessment = -999_999_999;
+	private int best = 0;
 	
 	private Playboard board;
 	
@@ -24,12 +33,44 @@ public class Node {
 		return id;
 	}
 	
+	public int getBest() {
+		return best;
+	}
+	
+	public void setBest(int best) {
+		this.best = best;
+	}
+	
+	/**
+	 * Getter for assessment
+	 * @return int
+	 */
+	public int getAssessment() {
+		return assessment;
+	}
+	
 	/**
 	 * Method give you the deep of your node
-	 * @return
+	 * @return int
 	 */
 	public int getDeep() {
 		return deep;
+	}
+	
+	/**
+	 * Method get you alpha
+	 * @return int
+	 */
+	public int getAlpha() {
+		return alpha;
+	}
+	
+	/**
+	 * Method get you beta
+	 * @return int
+	 */
+	public int getBeta() {
+		return beta;
 	}
 	
 	/**
@@ -71,6 +112,30 @@ public class Node {
 	public void setID(int id) {
 		this.id = id;
 	}
+	
+	/**
+	 * Setter for Alpha
+	 * @param alpha
+	 */
+	public void setAlpha(int alpha) {
+		this.alpha = alpha;
+	}
+	
+	/**
+	 * Setter for beta
+	 * @param beta
+	 */
+	public void setBeta(int beta) {
+		this.beta = beta;
+	}
+	
+	/**
+	 * Setter for assessment
+	 * @param assessment
+	 */
+	public void setAssessment(int assessment)  {
+		this.assessment = assessment;
+	}
 
 	/**
 	 * Parent ID Setter
@@ -82,10 +147,10 @@ public class Node {
 
 	/**
 	 * Children ID Setter
-	 * @param children - 
+	 * @param int - child id 
 	 */
-	public void setChildren(List<Integer> children) {
-		this.children = children;
+	public void setChildren(int id) {
+		children.add(id);
 	}	
 	
 	/**
@@ -116,9 +181,17 @@ public class Node {
 	@Override
 	public String toString() {
 		if ( board_position == undefined) {
-			return  " [ID: " + id + ", ParentID: Root" + ", Deep: " + deep + ", BoardPosition: Undefine]" + ", Playboard: " + getPlayboard() +  "\n" ;
+			return  " [ID: " + id + ", ParentID: Root" + ", Deep: " + deep + ", Children_IDs: " + getChildren() +  ", BoardPosition: Undefine]" + ", Best: " + getBest() + ", Assessment: " + getAssessment() + ", Playboard: " + getPlayboard() +  "\n" ;
 		}
-		return " [ID: " + id + ", ParentID: " + parent_id + ", Deep: " + deep + ", BoardPosition: " + board_position + "]" +  ", Playboard: " + getPlayboard() + "\n";		
+		return " [ID: " + id + ", ParentID: " + parent_id + ", Deep: " + deep + ", Children_IDs: " + getChildren() + ", BoardPosition: " + board_position + "]" + ", Best: " + getBest() + ", Assessment: " + getAssessment() +  ", Playboard: " + getPlayboard() + "\n";		
+	}
+	
+	/**
+	 * Method return true, if it this node a leaf node, else false
+	 * @return boolean
+	 */
+	public boolean isLeaf() {
+		return getChildren().isEmpty();
 	}
 }
 
