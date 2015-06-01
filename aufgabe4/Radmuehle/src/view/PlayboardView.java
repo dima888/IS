@@ -20,7 +20,7 @@ public class PlayboardView extends javax.swing.JFrame {
 	
 	private Game game;
 	
-	private int button_width = 45;
+	private int button_width = 50;
 
     /**
      * Creates new form NewJFrame
@@ -244,6 +244,7 @@ public class PlayboardView extends javax.swing.JFrame {
                 view.jButton6.setLocation(200, 400);         
                 
                 view.infoLabel.setLocation(50, 600);
+                
                 
                        
             }

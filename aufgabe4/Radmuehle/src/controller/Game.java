@@ -51,7 +51,7 @@ public class Game {
 		minimax = new Minimax(tree);
 		
 		
-		System.out.println(tree.getStruct());
+		//System.out.println(tree.getStruct());
 		
 		tree.generateTree(board, 2);
 		
@@ -118,18 +118,16 @@ public class Game {
 		}
 		
 		tree.generateTree(board, 2);
-		System.out.println(tree.getStruct());
+		//System.out.println(tree.getStruct());
 		
 		//try {Thread.sleep(104000);} catch (InterruptedException e) {e.printStackTrace();}
 		
 		int best_value = minimax.maxAB(tree.getNode(1), tree.getNode(1).getAlpha(), tree.getNode(1).getBeta());		
 		System.out.println(best_value);
 		
-		System.out.println(board.getStruct());
-		System.out.println(tree.getStruct());
-		
-		
-		
+		//System.out.println(board.getStruct());
+		//System.out.println(tree.getStruct());
+	
 		//board.getStruct();
 		return true;
 	}
