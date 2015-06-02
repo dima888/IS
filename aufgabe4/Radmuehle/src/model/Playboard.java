@@ -87,6 +87,34 @@ public class Playboard {
 	public int getDOWN_RIGHT() {
 		return DOWN_RIGHT;
 	}
+	
+	/**
+	 * Method get you to face id to your param
+	 * @param position
+	 * @return
+	 */
+	public int toFace(int position) {
+		
+		if ( position == MIDDLE || position > 9 || position < 1 ) {
+			throw new IllegalArgumentException("Position: " +  position + " ist not legitim");
+		}
+		
+		switch (position) {
+		case UP: return DOWN;
+		case UP_RIGHT: return DOWN_LEFT;
+		case RIGHT: return LEFT;
+		case DOWN_RIGHT: return UP_LEFT;
+		case DOWN: return UP;
+		case DOWN_LEFT: return UP_RIGHT;
+		case LEFT: return RIGHT;
+		case UP_LEFT: return DOWN_RIGHT;
+
+		default:
+			break;
+		}
+		
+		return 9;
+	}
 
 	/**
 	 * Getter for playboard

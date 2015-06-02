@@ -55,9 +55,8 @@ public class Game {
 		
 		tree.generateTree(board, 2);
 		
-		System.out.println(minimax.maxAB(tree.getNode(1), tree.getNode(1).getAlpha(), tree.getNode(1).getBeta()));
-		
-		
+		//System.out.println(minimax.maxAB(tree.getNode(1), tree.getNode(1).getAlpha(), tree.getNode(1).getBeta()));
+		minimax.maxAB(tree.getNode(1), tree.getNode(1).getAlpha(), tree.getNode(1).getBeta());
 		
 		
 		// set the player tokens
@@ -123,7 +122,7 @@ public class Game {
 		//try {Thread.sleep(104000);} catch (InterruptedException e) {e.printStackTrace();}
 		
 		int best_value = minimax.maxAB(tree.getNode(1), tree.getNode(1).getAlpha(), tree.getNode(1).getBeta());		
-		System.out.println(best_value);
+		//System.out.println(best_value);
 		
 		//System.out.println(board.getStruct());
 		//System.out.println(tree.getStruct());
