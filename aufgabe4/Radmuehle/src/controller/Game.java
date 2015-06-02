@@ -48,11 +48,7 @@ public class Game {
 		board.initializeBoard();
 						
 		tree = new Tree();
-		minimax = new Minimax(tree);
-		
-		
-		//System.out.println(tree.getStruct());
-		
+		minimax = new Minimax(tree);				
 		tree.generateTree(board, 2);
 		
 		//System.out.println(minimax.maxAB(tree.getNode(1), tree.getNode(1).getAlpha(), tree.getNode(1).getBeta()));
@@ -101,14 +97,14 @@ public class Game {
 		if (setTokenLimit-- < 1) {
 			
 			// Move Token Phase			
-			System.err.println("Move token Phase \n");
+			//System.err.println("Move token Phase \n");
 			if (!moveToken(jButton)) {
 				return false;
-			}
+			}			
 			
 		} else {
 			
-			System.err.println("Set Token Phase \n");
+			//System.err.println("Set Token Phase \n");
 			// Set Token Phase			
 			if (!setToken(jButton)) {				
 				setTokenLimit++;
@@ -116,18 +112,27 @@ public class Game {
 			}
 		}
 		
-		tree.generateTree(board, 2);
-		//System.out.println(tree.getStruct());
+		// change deep
+		int need_deep = 0;		
+		// move
+		if ( board.getFreePositionCount() == 3 ) {			
+			need_deep = 2;
+			// set
+		} else {
+			need_deep = 2;
+		}	
 		
-		//try {Thread.sleep(104000);} catch (InterruptedException e) {e.printStackTrace();}
+		//deferrals_count++;
+		System.out.println(deferrals_count);
 		
-		int best_value = minimax.maxAB(tree.getNode(1), tree.getNode(1).getAlpha(), tree.getNode(1).getBeta());		
-		//System.out.println(best_value);
+		if (getCurrentPlayerMoveToken()) {
+			tree = new Tree();
+			tree.generateTree(board, need_deep);	
+			minimax.setTree(tree);
+			int best_value = minimax.maxAB(tree.getNode(1), tree.getNode(1).getAlpha(), tree.getNode(1).getBeta());
+		}
 		
-		//System.out.println(board.getStruct());
-		//System.out.println(tree.getStruct());
-	
-		//board.getStruct();
+				
 		return true;
 	}
 	
@@ -188,7 +193,7 @@ public class Game {
 				
 				// precondtion
 				if (old_color != color_p1) {
-					System.err.println("Its not your move!!!");
+					board.setCurrentMessage("Its not your move!!!");
 					jButtonList.get(0).setBackground(old_color);
 					
 					// false neighbor rule
@@ -205,7 +210,7 @@ public class Game {
 			} else {
 				
 				if (old_color != color_p2) {
-					System.err.println("Its not your move!!!");
+					board.setCurrentMessage("Its not your move!!!");
 					jButtonList.get(0).setBackground(old_color);
 					
 					// false neighbor rule

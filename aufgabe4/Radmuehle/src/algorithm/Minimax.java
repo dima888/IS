@@ -36,6 +36,10 @@ public class Minimax {
 		this.tree = tree;
 	}
 	
+	public void setTree(Tree tree) {
+		this.tree = tree;
+	}
+	
 	/**
 	 * Max
 	 * @param node

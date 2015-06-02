@@ -34,6 +34,7 @@ public class Tree {
 	 */
 	public Tree() {		
 		// add the root node
+		
 		createAndAddRootNode();
 		//root_node.setPlayboard(board);
 	}
@@ -177,10 +178,13 @@ public class Tree {
 			}
 			
 			// free position in board allow! 3 => 3 positions was clear!
-			if ( deepestNode.getPlayboard().getFreePositionCount() <= 3 ) {
+			//if ( deepestNode.getPlayboard().getFreePositionCount() <= 3 ) {
+			if ( board.getFreePositionCount() <= 3 ) {
 				// Jump token status
 				
 				generateNodes(board, runs, playerToken, true);
+				
+				
 								
 				System.err.println("hier? JETZT WIRD GESCHOBEN1111111111111111111111111");
 				
@@ -268,6 +272,8 @@ public class Tree {
 				// set deepest node
 				deepestNode = currentNode;
 				
+				
+				
 				// add a node in our tree
 				add(node.getID(), currentNeighbor, currentNode);				
 			}
@@ -322,43 +328,47 @@ public class Tree {
 	/**
 	 * Create a root node an add him in tree
 	 */
-	private void createAndAddRootNode() {
-		Node rootNode = createNode();
-		rootNode.setDeep(1);
-		rootNode.setParentID(undefined);
+	private void createAndAddRootNode() {		
+		Node rootNode = createNode();		
+		rootNode.setDeep(1);		
+		rootNode.setParentID(undefined);		
 		//rootNode.setChildren(-1);
-		rootNode.setID(node_id);
-		rootNode.setBoardPosition(undefined);
-//		Playboard board = new Playboard();
-//		board.initializeBoard();
-//		rootNode.setPlayboard(board);				
-		tree.add(rootNode);
-		root_node = rootNode;
+		rootNode.setID(node_id);		
+		rootNode.setBoardPosition(undefined);		
+		tree.add(rootNode);		
+		root_node = rootNode;		
 		deepestNode = root_node;
 	}
 	
 	
 	public static void main(String[] args) {
-//		Tree tree = new Tree();
-//
-//		Playboard p = new Playboard();
-//		p.initializeBoard();
-//	
-//		tree.generateTree(p, 2);
-//		
-////		p.addToken("Red", 1);
-////		
-////		p.addToken("Blue", 2);
-////		
-////		p.addToken("Red", 3);
-////		
-////		p.addToken("Blue", 4);
-////		
-////		p.addToken("Red", 5);
-////		
-////		p.addToken("Blue", 6);
-////		
-//		//tree.generateTree(p ,4);
+		Tree tree = new Tree();
+
+		
+		
+		Playboard p = new Playboard();
+		p.initializeBoard();
+	
+		//tree.generateTree(p, 2);
+		
+		p.addToken("Blue", 1);
+		
+		p.addToken("Blue", 3);
+		
+		p.addToken("Blue", 4);
+		
+		p.addToken("Red", 5);
+		
+		p.addToken("Red", 9);
+		
+		p.addToken("Red", 8);
+		
+		
+		List<Node> n = tree.generateTree(p ,2);
+		
+		System.out.println(n);
+		
+		//{1=Blue, 2=clear, 3=Blue, 4=Blue, 5=Red, 6=clear, 7=clear, 8=Red, 9=Red}
 //		
 ////		tree.addNewNode(1, -1); // a
 ////		tree.addNewNode(1, -1); // b

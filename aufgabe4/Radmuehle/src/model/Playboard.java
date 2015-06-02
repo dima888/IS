@@ -133,6 +133,10 @@ public class Playboard {
 		return currentMessage;
 	}
 	
+	public void setCurrentMessage(String currentMessage) {
+		this.currentMessage = currentMessage;
+	}
+	
 	/**
 	 * Method get you a list with neighbors position to a position
 	 * @param position - your current position
@@ -195,13 +199,13 @@ public class Playboard {
 		// Precondtion
 		if (toBoardPosition > 9 || toBoardPosition < 1) {
 			currentMessage = "A Board Position: fromBoardPosition v toBoardPosition" + " out of box! Legitim positions was 1..9";
-			System.err.println(currentMessage);
+//			System.err.println(currentMessage);
 			return false;
 		}
 		
 		if ( board.get(toBoardPosition).compareTo(clearToken) != 0 ) {
 			currentMessage = "Board Position: " + toBoardPosition + " is not free";
-			System.err.println(currentMessage);
+//			System.err.println(currentMessage);
 			return false;
 		}
 		
@@ -223,31 +227,32 @@ public class Playboard {
 		 */
 		if (fromBoardPosition > 9 || fromBoardPosition < 1 || toBoardPosition > 9 || toBoardPosition < 1) {
 			currentMessage = "A Board Position: fromBoardPosition v toBoardPosition" + " out of box! Legitim positions was 1..9";
-			System.err.println(currentMessage);
+//			System.err.println(currentMessage);
 			return false;
 		}
 		
 		if (toBoardPosition > 9 || toBoardPosition < 1) {
 			currentMessage = "To Board Position: " + toBoardPosition + " out of box! Legitim positions was 1..9";
-			System.err.println(currentMessage);
+//			System.err.println(currentMessage);
 			return false;
 		}
 		
 		if ( board.get(fromBoardPosition).compareTo(clearToken) == 0 ) {
-			System.err.println("Board Position: " + fromBoardPosition + " have none token!");
+			currentMessage = "Board Position: " + fromBoardPosition + " have none token!";
+//			System.err.println("Board Position: " + fromBoardPosition + " have none token!");
 			return false;
 		}
 		
 		if ( board.get(toBoardPosition).compareTo(clearToken) != 0 ) {
 			currentMessage = "Board Position: " + toBoardPosition + " is not free";
-			System.err.println(currentMessage);
+//			System.err.println(currentMessage);
 			return false;
 		}
 		
 		// neighbor check
 		if (!isNeighbor(fromBoardPosition, toBoardPosition)) {
 			currentMessage = "fromBoardPosition and toBoardPosition + (" + fromBoardPosition + ", " + toBoardPosition + ",)  was not neighbors!!!!";
-			System.err.println(currentMessage);
+			//System.err.println(currentMessage);
 			specialRule = true;
 			return false;
 		}
@@ -272,28 +277,35 @@ public class Playboard {
 	 * @param token - player token
 	 */
 	private void winner(String token) {
-		String winnerText = "Player with'" + token +"' token is the winner!!!!!!!!!!!!!!!!!!!";
-		
-		if ( board.get(UP).compareTo(token) == 0 && board.get(MIDDLE).compareTo(token) == 0 && board.get(DOWN).compareTo(token) == 0) {
+		String winnerText = "Player with'" + token +"' token is the winner!!!!!!!!!!!!!!!!!!!";		
+		if (haveLine(token)) {
 			currentMessage = winnerText;
-			System.err.println(currentMessage);
+			//System.err.println(currentMessage);
+		}		
+	}
+	
+	/**
+	 * Method check of line in playboard
+	 * @param token
+	 * @return
+	 */
+	public boolean haveLine(String token) {
+		if ( board.get(UP).compareTo(token) == 0 && board.get(MIDDLE).compareTo(token) == 0 && board.get(DOWN).compareTo(token) == 0) {
+			return true;
 		}
 		
 		if ( board.get(UP_LEFT).compareTo(token) == 0 && board.get(MIDDLE).compareTo(token) == 0 && board.get(DOWN_RIGHT).compareTo(token) == 0) {
-			currentMessage = winnerText;
-			System.err.println(currentMessage);
+			return true;
 		}
 		
 		if ( board.get(UP_RIGHT).compareTo(token) == 0 && board.get(MIDDLE).compareTo(token) == 0 && board.get(DOWN_LEFT).compareTo(token) == 0) {
-			currentMessage = winnerText;
-			System.err.println(currentMessage);
+			return true;
 		}
 		
 		if ( board.get(LEFT).compareTo(token) == 0 && board.get(MIDDLE).compareTo(token) == 0 && board.get(RIGHT).compareTo(token) == 0) {
-			currentMessage = winnerText;
-			System.err.println(currentMessage);
+			return true;
 		}
-		
+		return false;
 	}
 	
 	/**

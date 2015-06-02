@@ -1,5 +1,6 @@
 package algorithm;
 
+import java.util.List;
 import java.util.Map.Entry;
 
 import model.Playboard;
@@ -30,20 +31,16 @@ public class Assessment {
 		int asses = -100;
 		Playboard board = node.getPlayboard();		
 		
-		//System.out.println(board.getFreePositionCount());
-		
-		//System.out.println("In Asses: " + board.getStruct());
-		
 		switch (board.getFreePositionCount()) {
-		case 8: asses = assesOneSetToken(board, player_1_token, player_2_token); break;	
-		case 6: asses = assesThreeSetToken(board, player_1_token, player_2_token); break;
-		case 4: asses = assesfiveSetToken(board, player_1_token, player_2_token); break;
-		case 3: asses = assesFullBoard(board, player_1_token, player_2_token);  break;
+			case 8: asses = assesOneSetToken(board, player_1_token, player_2_token); break;	
+			case 6: asses = assesThreeSetToken(board, player_1_token, player_2_token); break;
+			case 4: asses = assesfiveSetToken(board, player_1_token, player_2_token); break;
+			case 3: asses = assesFullBoard(board, player_1_token, player_2_token);  break;
 
-		default:
-			//System.out.println("Heuristik not define");
-			break;
-		}
+			default:
+				//System.out.println("Heuristik not define");
+				break;
+			}		
 		return asses;
 	}
 	
@@ -55,24 +52,15 @@ public class Assessment {
 //==========================================================================================================================================
 	
 	private int assesOneSetToken(Playboard board, String player_1_token, String player_2_token) {
-		//
 		if ( board.getStruct().get(board.getMIDDLE()).compareTo(player_1_token) == 0) {
-			System.err.println("Use assesOneSetToken heuristic");
+			//System.err.println("Use assesOneSetToken heuristic");
 			System.out.println(board);
 			return 10;
 		} 
 		return -10;
 	}
 	
-	/**
-	 * Das kann man einfacher machen, to face von blaue - 1 position setzten! oder als gut bewerten!!!
-	 * @param board
-	 * @param player_1_token
-	 * @param player_2_token
-	 * @return
-	 */
 	private int assesThreeSetToken(Playboard board, String player_1_token, String player_2_token) {
-		
 		int player_2_token_position = -1;
 		
 		// find the player 2 token position
@@ -88,6 +76,7 @@ public class Assessment {
 				}
 				
 				if ( board.getStruct().get(super_position_for_player1) == player_1_token ) {
+					System.err.println("Use assesThreeSetToken heuristic");
 					System.out.println(board);
 					return 20;
 				}				
@@ -97,11 +86,6 @@ public class Assessment {
 	}
 	
 	private int assesfiveSetToken(Playboard board, String player_1_token, String player_2_token) {	
-		
-		if (full_board) {
-			return -30;
-		}
-		
 		// win situation
 				for (Entry<Integer, String> map : board.getStruct().entrySet()) {
 					if ( map.getValue().compareTo(player_1_token) == 0 && map.getKey() != board.getMIDDLE()) {				
@@ -123,8 +107,8 @@ public class Assessment {
 						return -30;
 					}					
 					if (next_2.compareTo(player_1_token) == 0) {
+						System.err.println("Use assesfiveSetToken heuristic");
 						System.out.println(board);
-						full_board = true;
 						return 30;						
 					}
 				}
@@ -134,7 +118,41 @@ public class Assessment {
 	}
 
 	private int assesFullBoard(Playboard board, String player_1_token, String player_2_token) {
-		System.out.println("Board is full");
+		// win situation
+		if ( board.haveLine(player_1_token) ) {
+			System.out.println("Board is full");
+			System.out.println(board);
+			return 1000;			
+		}
+		
+		int count = 0;
+		// evry token without middle, have a nighbor
+		for (Entry<Integer, String> map: board.getStruct().entrySet()) {
+			if (map.getKey() != board.getMIDDLE()) {
+				
+				// current p1 token
+				if (map.getValue().compareTo(player_1_token) == 0) {
+					
+					// take all neighbors from current p1 token
+					List<Integer> neighbors = board.getNeighbors(map.getKey());
+					
+					for (Integer current_neighbor_position : neighbors) {
+						
+						if (current_neighbor_position != board.getMIDDLE()) {
+							if (board.getStruct().get(current_neighbor_position).compareTo(player_2_token) == 0) {
+								count++;
+							}
+						} 					
+					}					
+				}				
+			}
+		}
+		
+		if (count >= 3) {
+			System.err.println("Use assesFullBoard heuristic");
+			System.out.println(board);
+			return 40;
+		}
 		return -1;
 	}
 	
