@@ -29,9 +29,6 @@ public class Minimax {
 	private Assessment assesment = new Assessment();
 	private Tree tree;
 	
-	private String player_1_token = "Red";
-	private String player_2_token = "Blue";
-	
 	public Minimax(Tree tree) {
 		this.tree = tree;
 	}
@@ -46,9 +43,9 @@ public class Minimax {
 	 * @param alpha
 	 * @param beta
 	 */
-	public int maxAB(Node node, int alpha, int beta) {		
+	public int maxAB(Node node, int alpha, int beta, String current_player_token) {		
 		if ( node.isLeaf() ) {
-			return assesment.toAssess(node, player_1_token, player_2_token);
+			return assesment.toAssess(node, current_player_token);
 		}
 		
 		int best = -999_999_999;
@@ -66,7 +63,7 @@ public class Minimax {
 				current_node.setAlpha(alpha);
 			}
 			
-			int val = minAB(current_node, node.getAlpha(), node.getBeta());
+			int val = minAB(current_node, node.getAlpha(), node.getBeta(), current_player_token);
 			
 			if ( val > best ) {
 				best = val;
@@ -86,9 +83,9 @@ public class Minimax {
 	 * @param alpha
 	 * @param beta
 	 */
-	public int minAB(Node node, int alpha, int beta) {
+	public int minAB(Node node, int alpha, int beta, String current_player_token) {
 		if ( node.isLeaf() ) {
-			return assesment.toAssess(node, player_1_token, player_2_token);
+			return assesment.toAssess(node, current_player_token);
 		}
 		
 		int best = 999_999_999;
@@ -106,7 +103,7 @@ public class Minimax {
 				beta = best;
 			}
 			
-			int val = maxAB(tree.getNode(current_node_id), node.getAlpha(), node.getBeta());
+			int val = maxAB(tree.getNode(current_node_id), node.getAlpha(), node.getBeta(), current_player_token);
 			
 			if ( val < best ) {
 				current_node.setBest(val);

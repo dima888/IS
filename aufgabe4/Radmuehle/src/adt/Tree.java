@@ -1,6 +1,7 @@
 package adt;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -22,12 +23,16 @@ public class Tree {
 	// node ids
 	private int node_id = 1;
 	
-	private int undefined  = 77777777;		
+	private final int UNDEFINED  = 77777777;		
 	
 	private Node root_node = null;
 	
+	private final int BEST = 1000;
+	
 	// deepest node a our tree
 	Node deepestNode = null;
+	
+	private static int who_is = 0;
 	
 	/**
 	 * Constructor
@@ -156,11 +161,14 @@ public class Tree {
 	 * @param board - Playboard Object
 	 * @param deep -  Max deep of this tree
 	 */
-	public List<Node> generateTree(Playboard board, int deep) {		
+	public List<Node> generateTree(Playboard board, int deep, String player_token_step) {		
 		deep--;
 		
 		// edit root
 		root_node.setPlayboard(board);
+		int current_free_positions = board.getFreePositionCount();
+		
+		// current clear positions in a board
 		
 		int runs = 0;
 		
@@ -172,27 +180,28 @@ public class Tree {
 						
 			
 			if (runs % 2 != 0) {
-				playerToken = player_1_token;
+				playerToken = player_token_step;
 			} else {
-				playerToken = player_2_token;
+				
+				if (player_token_step == player_1_token) {
+					playerToken = player_2_token;
+				} else {
+					playerToken = player_1_token;
+				}
 			}
 			
+			//who_is = who_is + 1;
+			
 			// free position in board allow! 3 => 3 positions was clear!
-			//if ( deepestNode.getPlayboard().getFreePositionCount() <= 3 ) {
-			if ( board.getFreePositionCount() <= 3 ) {
-				// Jump token status
+			System.out.println(board.getFreePositionCount());
+			if ( (current_free_positions--) <= 3 ) {
 				
-				generateNodes(board, runs, playerToken, true);
-				
-				
-								
+				// Jump token status				
+				generateNodes(board, runs, playerToken, true);															
 				System.err.println("hier? JETZT WIRD GESCHOBEN1111111111111111111111111");
-				
 				
 			} else {
 				// insert token status						
-				
-				// generate nodes
 				generateNodes(board, runs, playerToken, false);			
 			}
 		}							
@@ -331,71 +340,135 @@ public class Tree {
 	private void createAndAddRootNode() {		
 		Node rootNode = createNode();		
 		rootNode.setDeep(1);		
-		rootNode.setParentID(undefined);		
+		rootNode.setParentID(UNDEFINED);		
 		//rootNode.setChildren(-1);
 		rootNode.setID(node_id);		
-		rootNode.setBoardPosition(undefined);		
+		rootNode.setBoardPosition(UNDEFINED);		
 		tree.add(rootNode);		
 		root_node = rootNode;		
 		deepestNode = root_node;
 	}
 	
+	/**
+	 * Method print you the next best way
+	 */
+	public void printNextBestStep() {
+		List<Node> node_list = getWay();
+		
+		// last node 
+		Node  last_node = node_list.get(node_list.size() -1);		
+		System.out.println(last_node.getPlayboard().getStruct());
+	}
+	
+	/**
+	 * Method give you the best step
+	 * the last elem in the list is the next best step!
+	 * @return List<Node>
+	 */
+	private List<Node> getWay() {
+		
+		// take all leafs from tree
+		List<Node> leafs = getAllLeafs();		
+		
+		// define best node
+		Node best_node = null;
+		
+		// search here the best
+		for (Node node : leafs) {
+			if ( node.getAssessment() == BEST ) {
+				best_node = node;
+				
+				// we found a, leave the for
+				break;
+			}
+		}
+		
+		// save here the best way
+		return getWayHelper(best_node);	
+	}
+	
+	private List<Node> getAllLeafs() {
+		List<Node> result = new ArrayList<Node>();
+		
+		int current_index;
+		for (current_index = tree.size() ; current_index > 0 ; current_index--) {
+			
+			if (getNode(current_index).getChildren().isEmpty()) {
+				result.add(getNode(current_index));
+			} else {
+				break;
+			}
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * rekursion head
+	 * @param node
+	 * @return
+	 */
+	private List<Node> getWayHelper(Node node)  {
+		List<Node> result = new ArrayList<Node>();
+		getWayHelper2(node, result);		
+		return result;		
+	}
+	
+	/**
+	 * rekursion heart
+	 * @param node
+	 * @param result
+	 * @return
+	 */
+	private List<Node> getWayHelper2(Node node,  List<Node> result) {
+		
+		if ( node.getParentID() == UNDEFINED ) {
+			// recursion end
+			return result;
+		} else {			
+			// TODO: result must add the node
+			result.add(node);
+			getWayHelper2(getNode(node.getParentID()), result);
+		}		
+		return result;			
+	}
+	
+	
 	
 	public static void main(String[] args) {
-		Tree tree = new Tree();
-
+		Tree tree = new Tree();		
+		
+		Playboard board = new Playboard();
+		board.initializeBoard();
+		
+		board.addToken("Red", 9);
+		board.addToken("Blue", 2);
+		
+		board.addToken("Red", 1);
+		board.addToken("Blue", 6);
+		
+		board.addToken("Red", 8);
 		
 		
-		Playboard p = new Playboard();
-		p.initializeBoard();
-	
-		//tree.generateTree(p, 2);
+		Minimax minimax = new Minimax(tree);
 		
-		p.addToken("Blue", 1);
-		
-		p.addToken("Blue", 3);
-		
-		p.addToken("Blue", 4);
-		
-		p.addToken("Red", 5);
-		
-		p.addToken("Red", 9);
-		
-		p.addToken("Red", 8);
-		
-		
-		List<Node> n = tree.generateTree(p ,2);
+		System.out.println(board.getFreePositionCount());
+		List<Node> n = tree.generateTree(board ,4, "Blue");
 		
 		System.out.println(n);
 		
-		//{1=Blue, 2=clear, 3=Blue, 4=Blue, 5=Red, 6=clear, 7=clear, 8=Red, 9=Red}
-//		
-////		tree.addNewNode(1, -1); // a
-////		tree.addNewNode(1, -1); // b
-////		
-////		tree.addNewNode(2, -1); // a + c
-////		tree.addNewNode(2, -1);	// a + d			
-////		
-////		tree.addNewNode(3, -1); // b + e
-////		tree.addNewNode(3, -1); // b + f
-////		
-////		tree.addNewNode(4, -1); // c + g
-////		tree.addNewNode(4, -1); // c + h
-////		
-////		tree.addNewNode(5, -1); // d + i
-////		tree.addNewNode(5, -1); // d + j
-//		
-//		System.out.println(tree.tree);
-//	
-//		Minimax m = new Minimax(tree);
-//		
-//		
-//		int res = m.maxAB(tree.getNode(1), tree.getNode(1).getAlpha(), tree.getNode(1).getBeta());
-//		System.out.println(tree.tree);
-//		//int res2 = m.minAB(tree.getNode(1),tree.getNode(1).getAlpha(), tree.getNode(1).getBeta());
-//		
-//		System.out.println(res); 
-//		//System.out.println(res2);
+		System.out.println(tree.getNode(1));
+		
+		int access = minimax.maxAB(tree.getNode(1), tree.getNode(1).getAlpha(), tree.getNode(1).getBeta(), "Blue");
+		System.out.println(access);
+		
+		
+		System.out.println(tree.getStruct());
+		
+		System.out.println(tree.getNode(1));
+		
+		
+		tree.printNextBestStep();
 	}
 }
 

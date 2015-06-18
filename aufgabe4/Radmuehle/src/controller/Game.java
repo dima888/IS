@@ -35,9 +35,6 @@ public class Game {
 	// verschiebungen
 	private int deferrals_count = 0;
 	
-	private String player_1_token = "";
-	private String player_2_token = "";
-	
 	Color color_p1 = Color.RED;
 	Color color_p2 = Color.CYAN;
 	
@@ -49,15 +46,10 @@ public class Game {
 						
 		tree = new Tree();
 		minimax = new Minimax(tree);				
-		tree.generateTree(board, 2);
+		tree.generateTree(board, 2, "Red");
 		
 		//System.out.println(minimax.maxAB(tree.getNode(1), tree.getNode(1).getAlpha(), tree.getNode(1).getBeta()));
-		minimax.maxAB(tree.getNode(1), tree.getNode(1).getAlpha(), tree.getNode(1).getBeta());
-		
-		
-		// set the player tokens
-		player_1_token = player_1_color;
-		player_2_token = player_2_color;
+		minimax.maxAB(tree.getNode(1), tree.getNode(1).getAlpha(), tree.getNode(1).getBeta(), color_p1.toString());
 	}
 	
 	/**
@@ -123,16 +115,14 @@ public class Game {
 		}	
 		
 		//deferrals_count++;
-		System.out.println(deferrals_count);
+		//System.out.println(deferrals_count);
 		
 		if (getCurrentPlayerMoveToken()) {
 			tree = new Tree();
-			tree.generateTree(board, need_deep);	
+			tree.generateTree(board, need_deep, "Red");	
 			minimax.setTree(tree);
-			int best_value = minimax.maxAB(tree.getNode(1), tree.getNode(1).getAlpha(), tree.getNode(1).getBeta());
-		}
-		
-				
+			int best_value = minimax.maxAB(tree.getNode(1), tree.getNode(1).getAlpha(), tree.getNode(1).getBeta(), color_p1.toString());
+		}					
 		return true;
 	}
 	

@@ -20,7 +20,7 @@ public class Node {
 	private int undefined  = 77777777;	
 	private int alpha = -999_999_999;
 	private int beta = 999_999_999;	
-	private int assessment = -999_999_999;
+	private int assessment = 0;
 	private int best = 0;
 	
 	private Playboard board;
