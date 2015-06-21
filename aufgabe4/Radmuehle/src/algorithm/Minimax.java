@@ -29,6 +29,9 @@ public class Minimax {
 	private Assessment assesment = new Assessment();
 	private Tree tree;
 	
+	int infinity_max = 1;
+	int infinity_min = -1;
+	
 	public Minimax(Tree tree) {
 		this.tree = tree;
 	}
@@ -41,15 +44,15 @@ public class Minimax {
 	 * Max
 	 * @param node
 	 * @param alpha
-	 * @param beta
+	 * @param beta 
 	 */
 	public int maxAB(Node node, int alpha, int beta, String current_player_token) {		
-		if ( node.isLeaf() ) {
-			return assesment.toAssess(node, current_player_token);
+		if ( node.isLeaf() ) {			
+			return assesment.toAssess(node, current_player_token, tree);
 		}
 		
-		int best = -999_999_999;
-		node.setBest(best);				
+		int best = infinity_min;
+		//node.setBest(best);				
 			
 		// forall (S := Succ(node))
 		List<Integer> allSuccessorNodeIDs = succ(node);
@@ -85,11 +88,11 @@ public class Minimax {
 	 */
 	public int minAB(Node node, int alpha, int beta, String current_player_token) {
 		if ( node.isLeaf() ) {
-			return assesment.toAssess(node, current_player_token);
+			return assesment.toAssess(node, current_player_token, tree);
 		}
 		
-		int best = 999_999_999;
-		node.setBest(best);			
+		int best = infinity_max;
+		//node.setBest(best);			
 		
 		// forall (S := Succ(node))
 		List<Integer> allSuccessorNodeIDs = succ(node);
@@ -137,13 +140,13 @@ public class Minimax {
 	 */
 	private List<Integer> succ(Node node, List<Integer> result) {		
 		// recursion break;
-		if ( node.isLeaf() ) {
+		if ( node.isLeaf_2() ) {			
 			return result;
 		}
 		
 		List<Integer> childrens = node.getChildren();
 		
-		// add all childs
+		// add all childs // success nodes
 		result.addAll(childrens);
 		
 		for (Integer id : childrens) {

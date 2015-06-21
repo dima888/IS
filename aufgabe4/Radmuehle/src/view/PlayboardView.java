@@ -4,6 +4,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.Line2D;
+
 import controller.Game;
 
 /*
@@ -20,14 +21,22 @@ public class PlayboardView extends javax.swing.JFrame {
 	
 	private Game game;
 	
-	private int button_width = 50;
+	private int button_width = 55;
 
     /**
      * Creates new form NewJFrame
      */
+    public PlayboardView(Game game) {
+    	initComponents();       
+    	this.game = game;
+//        game = new Game("red", "blue");
+//        game.setView(this);
+        
+         
+    }
+    
     public PlayboardView() {
-        initComponents();        
-        game = new Game("red", "blue");
+    	initComponents();                        
     }
 
     /**
@@ -37,7 +46,9 @@ public class PlayboardView extends javax.swing.JFrame {
      */
     
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {    
+    private void initComponents() {   
+    	
+    	
     	
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
@@ -49,6 +60,9 @@ public class PlayboardView extends javax.swing.JFrame {
         jButton8 = new javax.swing.JButton();
         jButton9 = new javax.swing.JButton();
         infoLabel = new javax.swing.JLabel();
+        
+        // Field locations
+;
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(null);
@@ -143,7 +157,7 @@ public class PlayboardView extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
     
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {      	
+    public void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {      	
     	game.doStep(jButton1);    
     	infoLabel.setText(game.getInfo());
     	infoLabel.updateUI();
@@ -225,7 +239,7 @@ public class PlayboardView extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 PlayboardView view = new PlayboardView();
-                view.setVisible(true);
+                view.setVisible(true);                              
                 
                 view.setSize(800, 800);
 
@@ -244,9 +258,6 @@ public class PlayboardView extends javax.swing.JFrame {
                 view.jButton6.setLocation(200, 400);         
                 
                 view.infoLabel.setLocation(50, 600);
-                
-                
-                       
             }
         });
     }
@@ -309,14 +320,14 @@ public class PlayboardView extends javax.swing.JFrame {
          g2.draw(new Line2D.Double(new Point(360,354), new Point(247,433) ));         
     }
 
-    private javax.swing.JLabel infoLabel;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
-    private javax.swing.JButton jButton6;
-    private javax.swing.JButton jButton7;
-    private javax.swing.JButton jButton8;
-    private javax.swing.JButton jButton9;
+    public javax.swing.JLabel infoLabel;
+    public javax.swing.JButton jButton1;
+    public javax.swing.JButton jButton2;
+    public javax.swing.JButton jButton3;
+    public javax.swing.JButton jButton4;
+    public javax.swing.JButton jButton5;
+    public javax.swing.JButton jButton6;
+    public javax.swing.JButton jButton7;
+    public javax.swing.JButton jButton8;
+    public javax.swing.JButton jButton9;
 }

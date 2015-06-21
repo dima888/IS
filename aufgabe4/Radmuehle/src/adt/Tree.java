@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 
+import algorithm.Assessment;
 import algorithm.Minimax;
 import model.Playboard;
 
@@ -29,10 +30,10 @@ public class Tree {
 	
 	private final int BEST = 1000;
 	
+	private final int ROOT_ID = 1;
+	
 	// deepest node a our tree
 	Node deepestNode = null;
-	
-	private static int who_is = 0;
 	
 	/**
 	 * Constructor
@@ -176,8 +177,7 @@ public class Tree {
 		String playerToken = "";
 		
 		// condition for right deep of tree
-		while (runs++ < deep) {
-						
+		while (runs++ < deep) {					
 			
 			if (runs % 2 != 0) {
 				playerToken = player_token_step;
@@ -190,16 +190,10 @@ public class Tree {
 				}
 			}
 			
-			//who_is = who_is + 1;
-			
 			// free position in board allow! 3 => 3 positions was clear!
-			System.out.println(board.getFreePositionCount());
-			if ( (current_free_positions--) <= 3 ) {
-				
+			if ( (current_free_positions--) <= 3 ) {				
 				// Jump token status				
-				generateNodes(board, runs, playerToken, true);															
-				System.err.println("hier? JETZT WIRD GESCHOBEN1111111111111111111111111");
-				
+				generateNodes(board, runs, playerToken, true);																			
 			} else {
 				// insert token status						
 				generateNodes(board, runs, playerToken, false);			
@@ -218,7 +212,8 @@ public class Tree {
 
 		// run over all nodes in a deep
 		List<Node> nodeList = getNodes(currentDeep);		
-		for (Node node : nodeList) {			
+		for (Node node : nodeList) {
+			
 			// allocate all positions in board 			
 			if (status) {		
 				allocateAllPositionsWithMove(node, playerToken);								
@@ -246,8 +241,7 @@ public class Tree {
 				fromMeSetTokenPositions.add(elem.getKey());				
 			}			
 		}
-		
-		
+				
 		for (Integer current_board_position : fromMeSetTokenPositions) {
 			// suplly neighbors to current_board_position
 			List<Integer> allNeighbors = node.getPlayboard().getNeighbors(current_board_position);
@@ -280,14 +274,11 @@ public class Tree {
 				
 				// set deepest node
 				deepestNode = currentNode;
-				
-				
-				
+									
 				// add a node in our tree
 				add(node.getID(), currentNeighbor, currentNode);				
 			}
-		}
-		
+		}		
 	}
 
 	/**
@@ -352,12 +343,24 @@ public class Tree {
 	/**
 	 * Method print you the next best way
 	 */
-	public void printNextBestStep() {
-		List<Node> node_list = getWay();
+	public Node printNextBestStep(int best) {
+				
+		int pos_back = 2;
 		
-		// last node 
-		Node  last_node = node_list.get(node_list.size() -1);		
-		System.out.println(last_node.getPlayboard().getStruct());
+		try {
+			List<Node> node_list = getWay(best);		
+			System.err.println("----------------------------- Step Beginn -----------------------------------");
+			Thread.sleep(50);
+			//System.out.println(node_list.get(node_list.size() -pos_back));
+			System.out.println(node_list);
+			Thread.sleep(50);
+			System.err.println("----------------------------- Step End -----------------------------------");			
+			return node_list.get(node_list.size() -pos_back);
+			
+		} catch (Exception e) {
+			
+		}
+		return null;
 	}
 	
 	/**
@@ -365,41 +368,63 @@ public class Tree {
 	 * the last elem in the list is the next best step!
 	 * @return List<Node>
 	 */
-	private List<Node> getWay() {
+	private List<Node> getWay(int best) {
 		
 		// take all leafs from tree
-		List<Node> leafs = getAllLeafs();		
+		List<Node> leafs = getAllLeafs();
 		
 		// define best node
 		Node best_node = null;
 		
-		// search here the best
+		List<Node> best_node_list = new ArrayList<Node>();
+		
+		// search here the best nodes
 		for (Node node : leafs) {
-			if ( node.getAssessment() == BEST ) {
-				best_node = node;
-				
-				// we found a, leave the for
-				break;
+			if ( node.getAssessment() == best ) {	
+				best_node_list.add(node);
 			}
 		}
+		
+		//int shortest_node_id = 999_999_999;
+		// here we take the shortes way to the win
+//		for (Node node : best_node_list) {
+//			int current_node_id = node.getID(); 
+//			if (current_node_id < shortest_node_id) {
+//				shortest_node_id = current_node_id;
+//			}
+//		}
+		
+		//System.err.println(best_node_list);
+		//System.out.println("best leaf size: " + best_node_list.size());
+		
+		// TODO: Experements
+		
+		// shortest win situation
+		//best_node = getNode(shortest_node_id);
+		
+		// TODO: verhindert sieg
+		// longest win situationn		
+		best_node = best_node_list.get(best_node_list.size() -1);
+		
+		// TODO: verhindert niederlage
+		//best_node = best_node_list.get(0);
 		
 		// save here the best way
 		return getWayHelper(best_node);	
 	}
 	
-	private List<Node> getAllLeafs() {
+	/**
+	 * Method get you all nodes without children (Leafs)
+	 * @return
+	 */
+	public List<Node> getAllLeafs() {
 		List<Node> result = new ArrayList<Node>();
 		
-		int current_index;
-		for (current_index = tree.size() ; current_index > 0 ; current_index--) {
-			
-			if (getNode(current_index).getChildren().isEmpty()) {
-				result.add(getNode(current_index));
-			} else {
-				break;
+		for (Node node : tree) {
+			if (node.isLeaf()) {
+				result.add(node);
 			}
-		}
-		
+		}		
 		return result;
 	}
 	
@@ -420,13 +445,12 @@ public class Tree {
 	 * @param result
 	 * @return
 	 */
-	private List<Node> getWayHelper2(Node node,  List<Node> result) {
-		
+	private List<Node> getWayHelper2(Node node,  List<Node> result) {		
 		if ( node.getParentID() == UNDEFINED ) {
+			result.add(node);
 			// recursion end
 			return result;
 		} else {			
-			// TODO: result must add the node
 			result.add(node);
 			getWayHelper2(getNode(node.getParentID()), result);
 		}		
@@ -437,38 +461,44 @@ public class Tree {
 	
 	public static void main(String[] args) {
 		Tree tree = new Tree();		
+		Assessment assesment = new Assessment();
 		
 		Playboard board = new Playboard();
 		board.initializeBoard();
 		
-		board.addToken("Red", 9);
-		board.addToken("Blue", 2);
-		
-		board.addToken("Red", 1);
-		board.addToken("Blue", 6);
-		
 		board.addToken("Red", 8);
+		board.addToken("Blue", 9);
 		
+		board.addToken("Red", 7);
 		
+		board.addToken("Blue", 5);
+		
+		board.addToken("Red", 4);
+		
+
+	
 		Minimax minimax = new Minimax(tree);
 		
-		System.out.println(board.getFreePositionCount());
-		List<Node> n = tree.generateTree(board ,4, "Blue");
-		
-		System.out.println(n);
-		
-		System.out.println(tree.getNode(1));
-		
-		int access = minimax.maxAB(tree.getNode(1), tree.getNode(1).getAlpha(), tree.getNode(1).getBeta(), "Blue");
-		System.out.println(access);
-		
+		List<Node> n = tree.generateTree(board ,7, "Blue");
+		int access = minimax.maxAB(tree.getNode(1), tree.getNode(1).getAlpha(), tree.getNode(1).getBeta(), "Blue");	
 		
 		System.out.println(tree.getStruct());
 		
-		System.out.println(tree.getNode(1));
+		System.out.println("access: " + access);
+		
+		System.out.println(tree.printNextBestStep(access));;
 		
 		
-		tree.printNextBestStep();
+//		System.out.println(tree.getStruct());		
+		//System.err.println(tree.getAllLeafs());
+
+		Node node = tree.printNextBestStep(access);
+		//System.out.println(node);
+		
+		//System.out.println(assesment.looseInAStepHeuristic(node, "Red"));
+		
+//		System.err.println("Leaf size: " + tree.getAllLeafs().size());
+//		System.out.println("access: ---    " + access);
 	}
 }
 
@@ -479,7 +509,7 @@ public class Tree {
 
 
 
-
+//[ID: 3, ParentID: 1, Deep: 2, Children_IDs: [10, 11, 12, 13], BoardPosition: 6], Best: 0, Assessment: 0, Playboard: {1=Blue, 2=Blue, 3=clear, 4=Red, 5=Red, 6=Blue, 7=clear, 8=clear, 9=Red}
 
 
 

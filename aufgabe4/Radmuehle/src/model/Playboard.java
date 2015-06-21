@@ -308,6 +308,63 @@ public class Playboard {
 		return false;
 	}
 	
+	
+	/**
+	 * Method check of half line in playboard
+	 * Exmaple: 1->Red, 9->Red, 5->clear
+	 * @param token
+	 * @return
+	 */
+	public boolean haveHalfLine(String token) {
+		
+		// 1
+		if ( board.get(UP).compareTo(token) == 0 && board.get(MIDDLE).compareTo(token) == 0 && board.get(DOWN).compareTo(clearToken) == 0) {
+			return true;
+		}		
+		if ( board.get(UP).compareTo(token) == 0 && board.get(MIDDLE).compareTo(clearToken) == 0 && board.get(DOWN).compareTo(token) == 0) {
+			return true;
+		}		
+		if ( board.get(UP).compareTo(clearToken) == 0 && board.get(MIDDLE).compareTo(token) == 0 && board.get(DOWN).compareTo(token) == 0) {
+			return true;
+		}
+		
+		// 2
+		if ( board.get(UP_LEFT).compareTo(token) == 0 && board.get(MIDDLE).compareTo(token) == 0 && board.get(DOWN_RIGHT).compareTo(clearToken) == 0) {
+			return true;
+		}		
+		if ( board.get(UP_LEFT).compareTo(token) == 0 && board.get(MIDDLE).compareTo(clearToken) == 0 && board.get(DOWN_RIGHT).compareTo(token) == 0) {
+			return true;
+		}		
+		if ( board.get(UP_LEFT).compareTo(clearToken) == 0 &&	board.get(MIDDLE).compareTo(token) == 0 && board.get(DOWN_RIGHT).compareTo(token) == 0) {
+			return true;
+		}
+		
+		// 3
+		if ( board.get(UP_RIGHT).compareTo(token) == 0 && board.get(MIDDLE).compareTo(token) == 0 && board.get(DOWN_LEFT).compareTo(clearToken) == 0) {
+			return true;
+		}
+		if ( board.get(UP_RIGHT).compareTo(token) == 0 && board.get(MIDDLE).compareTo(clearToken) == 0 && board.get(DOWN_LEFT).compareTo(token) == 0) {
+			return true;
+		}
+		if ( board.get(UP_RIGHT).compareTo(clearToken) == 0 && board.get(MIDDLE).compareTo(token) == 0 && board.get(DOWN_LEFT).compareTo(token) == 0) {
+			return true;
+		}
+		
+		// 4
+		if ( board.get(LEFT).compareTo(token) == 0 && board.get(MIDDLE).compareTo(token) == 0 && board.get(RIGHT).compareTo(clearToken) == 0) {
+			return true;
+		}
+		if ( board.get(LEFT).compareTo(token) == 0 && board.get(MIDDLE).compareTo(clearToken) == 0 && board.get(RIGHT).compareTo(token) == 0) {
+			return true;
+		}
+		if ( board.get(LEFT).compareTo(clearToken) == 0 && board.get(MIDDLE).compareTo(token) == 0 && board.get(RIGHT).compareTo(token) == 0) {
+			return true;
+		}
+		
+		
+		return false;
+	}
+	
 	/**
 	 * Method give you true back, if p_a and _b was neighbors
 	 * @param position_a

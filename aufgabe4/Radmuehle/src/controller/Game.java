@@ -6,7 +6,10 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.JButton;
+import javax.swing.event.EventListenerList;
 
+import view.PlayboardView;
+import adt.Node;
 import adt.Tree;
 import algorithm.Minimax;
 import model.Playboard;
@@ -35,21 +38,74 @@ public class Game {
 	// verschiebungen
 	private int deferrals_count = 0;
 	
+	private int deep = 3;
+	
 	Color color_p1 = Color.RED;
 	Color color_p2 = Color.CYAN;
 	
-	List<JButton> jButtonList = new ArrayList<JButton>();
+	boolean step_not_found = false;
 	
-	public Game(String player_1_color, String player_2_color) {
+	Bot bot;
+	
+
+	boolean bot_1 = true;
+	boolean bot_2 = true;
+	
+	List<JButton> jButtonList = new ArrayList<JButton>();
+	private PlayboardView view;
+	
+	public Game(String player_1_color, String player_2_color) {		
+		
 		board = new Playboard();
 		board.initializeBoard();
 						
 		tree = new Tree();
-		minimax = new Minimax(tree);				
-		tree.generateTree(board, 2, "Red");
+		minimax = new Minimax(tree);		
 		
-		//System.out.println(minimax.maxAB(tree.getNode(1), tree.getNode(1).getAlpha(), tree.getNode(1).getBeta()));
-		minimax.maxAB(tree.getNode(1), tree.getNode(1).getAlpha(), tree.getNode(1).getBeta(), color_p1.toString());
+		initializeView();
+		
+		bot = new Bot(view);
+		
+
+				
+		// player 1
+		if (getCurrentPlayerMoveToken()) {						
+			giveTip("Red", bot_1);
+		} else {
+			// player 2
+			giveTip("Blue", bot_2);
+		}		
+		
+	
+	}
+	
+	private void initializeView() {
+		view = new PlayboardView(this);
+		view.setVisible(true);				
+        view.setSize(800, 800);
+        setViewButtonPositions();
+	}
+
+	private void setViewButtonPositions() {
+        view.jButton1.setLocation(350, 100);  
+        
+        view.jButton9.setLocation(350, 300);                
+        view.jButton5.setLocation(350, 500);
+        
+        view.jButton7.setLocation(150, 300);
+        view.jButton3.setLocation(550, 300);
+        
+        view.jButton2.setLocation(500, 200);
+        view.jButton8.setLocation(200, 200);
+        
+        view.jButton4.setLocation(500, 400);
+        view.jButton6.setLocation(200, 400);         
+        
+        view.infoLabel.setLocation(50, 600);		
+	}
+
+	public void setView(PlayboardView view) {
+		this.view = view;
 	}
 	
 	/**
@@ -75,55 +131,88 @@ public class Game {
 	 * if true -> player 1; else player 2
 	 * @return boolean
 	 */
-	public boolean getCurrentPlayerMoveToken() {
+	private boolean getCurrentPlayerMoveToken() {
 		if (deferrals_count % 2 == 0) {
 			return true;			
 		} 		
 		return false;
-	}
+	}	
 	
-	
-	public boolean doStep(JButton jButton) {
+	public boolean doStep(JButton jButton) {			
 		
 		// Precondition
-		if (setTokenLimit-- < 1) {
-			
+		if (setTokenLimit-- < 1) {		
 			// Move Token Phase			
-			//System.err.println("Move token Phase \n");
 			if (!moveToken(jButton)) {
 				return false;
 			}			
 			
-		} else {
-			
-			//System.err.println("Set Token Phase \n");
+		} else {			
 			// Set Token Phase			
 			if (!setToken(jButton)) {				
 				setTokenLimit++;
 				return false;
 			}
 		}
-		
-		// change deep
-		int need_deep = 0;		
-		// move
-		if ( board.getFreePositionCount() == 3 ) {			
-			need_deep = 2;
-			// set
+				
+		// player 1
+		if (getCurrentPlayerMoveToken()) {	
+			giveTip("Red", bot_1);
 		} else {
-			need_deep = 2;
-		}	
-		
-		//deferrals_count++;
-		//System.out.println(deferrals_count);
-		
-		if (getCurrentPlayerMoveToken()) {
-			tree = new Tree();
-			tree.generateTree(board, need_deep, "Red");	
-			minimax.setTree(tree);
-			int best_value = minimax.maxAB(tree.getNode(1), tree.getNode(1).getAlpha(), tree.getNode(1).getBeta(), color_p1.toString());
-		}					
+			// player 2
+			giveTip("Blue", bot_2);
+		}
 		return true;
+	}
+	
+	/**
+	 * Get tip
+	 * @param bot
+	 */
+	private void giveTip(String player, boolean bot) {		
+
+		// bot can not found the way
+		if (step_not_found) {
+			// start bot back
+			step_not_found = false;
+			return;
+		}
+		
+		tree = new Tree();
+		int best_assessment = 0;
+		Node futureNode;		
+		
+		if (bot) {
+			
+			System.out.println("Tip for player: " + player);
+			tree.generateTree(board, deep, player);	
+			minimax.setTree(tree);						
+			best_assessment = minimax.maxAB(tree.getNode(1), tree.getNode(1).getAlpha(), tree.getNode(1).getBeta(), player);
+			
+			try {											
+				futureNode = tree.printNextBestStep(best_assessment);
+
+				// bot make step
+				this.bot.doStep(tree.getNode(1), futureNode);
+				
+			} catch (NullPointerException e) {
+				System.err.println("Loesung nicht gefunden!");		
+				
+				// boolean for close the recusiv call
+				step_not_found = true;
+				
+				// Bot clicked here random
+				this.bot.doRandomStep(tree.getNode(1), player);							
+				return;
+			}
+		
+		} else {
+			System.out.println(player + " bot not activ");
+		}
+		
+		if (deep < 6) {
+			deep++;
+		}
 	}
 	
 	/**
@@ -154,10 +243,17 @@ public class Game {
 			jButton.setBackground(color_p2);
 			
 			player_2_tokens--;
-		}							
+			
+		}		
+		deferrals_count++;
 		return true;
 	}
 	
+	/**
+	 * Method return the board position from clicked button
+	 * @param jButton
+	 * @return
+	 */
 	private int giveBoardPosition(JButton jButton) {		
 		String button_value = jButton.getText();
 		
@@ -215,11 +311,7 @@ public class Game {
 				jButton.setBackground(color_p2);
 			}
 			
-			
-			
-			
 			// move in struct
-			//if (!board.moveToken(Integer.parseInt(jButtonList.get(0).getText()), Integer.parseInt(jButtonList.get(1).getText()))) {
 			if (!board.moveToken(giveBoardPosition(jButtonList.get(0)), giveBoardPosition(jButtonList.get(1)))) {
 				// // exception! set white color back of 
 				jButtonList.get(0).setBackground(old_color);
@@ -253,5 +345,9 @@ public class Game {
 	 */
 	public Map getPlayboard() {
 		return board.getStruct();
+	}
+	
+	public static void main(String[] args) {
+		Game g = new Game("Red", "Blue");
 	}
 }

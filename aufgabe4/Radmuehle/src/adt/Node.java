@@ -187,10 +187,34 @@ public class Node {
 	}
 	
 	/**
+	 * TODO: Testing
+	 * We change the definition of leaf for our bot!
+	 * New definition: a leaf is with a win line! win line -> haveLine method in playboard
+	 * 
+	 * 
 	 * Method return true, if it this node a leaf node, else false
 	 * @return boolean
 	 */
 	public boolean isLeaf() {
+		
+//		if (getChildren().isEmpty()) {
+//			return true;
+//		}		
+//		if (this.getPlayboard().haveLine("Red")) {
+//			return true;
+//		}
+//		if (this.getPlayboard().haveLine("Blue")) {
+//			return true;
+//		}
+		
+		if (getID() != 1) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public boolean isLeaf_2() {
 		return getChildren().isEmpty();
 	}
 }
