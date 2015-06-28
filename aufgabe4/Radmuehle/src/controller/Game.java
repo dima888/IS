@@ -2,6 +2,7 @@ package controller;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -38,7 +39,8 @@ public class Game {
 	// verschiebungen
 	private int deferrals_count = 0;
 	
-	private int deep = 3;
+	private int deep = 6;
+	private int max_deep = 6;
 	
 	Color color_p1 = Color.RED;
 	Color color_p2 = Color.CYAN;
@@ -48,7 +50,7 @@ public class Game {
 	Bot bot;
 	
 
-	boolean bot_1 = true;
+	boolean bot_1 = false;
 	boolean bot_2 = true;
 	
 	List<JButton> jButtonList = new ArrayList<JButton>();
@@ -182,15 +184,70 @@ public class Game {
 		int best_assessment = 0;
 		Node futureNode;		
 		
-		if (bot) {
-			
-			System.out.println("Tip for player: " + player);
+		if (bot) {		
 			tree.generateTree(board, deep, player);	
 			minimax.setTree(tree);						
 			best_assessment = minimax.maxAB(tree.getNode(1), tree.getNode(1).getAlpha(), tree.getNode(1).getBeta(), player);
 			
-			try {											
-				futureNode = tree.printNextBestStep(best_assessment);
+//			System.out.println(tree.getStruct());
+			
+
+			
+			System.out.println("Beste bewertung: " + best_assessment);
+			//System.err.println(tree.getAllLeafs());
+									
+			try {			
+					
+//				futureNode = tree.printNextBestStep(best_assessment);
+//				tree.printNextBestStep(best_assessment);
+				
+				
+//				System.out.println(futureNode);
+								
+			
+				// heuristiken erst dann spielen lassen, wenn alle token gelegt wurden
+				if (setTokenLimit <1) {
+					
+//					List<Node> allowedNodeList = new ArrayList<>();
+					
+					for (Node node : tree.getNodes(2)) {
+						
+						if (tree.neighborWasMyTokenHeuristic(new ArrayList<>(Arrays.asList(node)), player) ) {
+							//continue;
+							node.setAssessment(node.getAssessment() - 200);
+						}
+//						
+						if (tree.nonNeighborHeuristic(new ArrayList<>(Arrays.asList(node)), player) ) {
+							node.setAssessment(node.getAssessment() - 250);
+						}	
+						
+//						allowedNodeList.add(node);						
+					}
+				
+//					try {Thread.sleep(50);} catch (InterruptedException e1) {e1.printStackTrace();}
+//					System.err.println("Gefilterne Wege");
+//					try {Thread.sleep(50);} catch (InterruptedException e1) {e1.printStackTrace();}
+//					System.out.println(allowedNodeList);										
+//					try {Thread.sleep(50);} catch (InterruptedException e1) {e1.printStackTrace();}
+					
+					
+//					if ( !allowedNodeList.isEmpty() ) {
+//						futureNode = tree.getMaxAssessmentNode(tree.getNodes(2));
+//					}
+					
+					
+				}
+							
+				//tree.printAllBestWays(best_assessment);
+				futureNode = tree.getMaxAssessmentNode(tree.getNodes(2));
+				tree.printNextBestStep(futureNode.getAssessment());
+				
+				try {Thread.sleep(50);} catch (InterruptedException e1) {e1.printStackTrace();}
+				System.err.println("Naechten moeglichen Wege!!!");
+				System.out.println(tree.getNodes(2));
+				try {Thread.sleep(50);} catch (InterruptedException e1) {e1.printStackTrace();}
+				
+				
 
 				// bot make step
 				this.bot.doStep(tree.getNode(1), futureNode);
@@ -210,7 +267,7 @@ public class Game {
 			System.out.println(player + " bot not activ");
 		}
 		
-		if (deep < 6) {
+		if (deep < max_deep) {
 			deep++;
 		}
 	}

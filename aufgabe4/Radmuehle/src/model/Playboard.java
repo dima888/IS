@@ -335,7 +335,7 @@ public class Playboard {
 		if ( board.get(UP_LEFT).compareTo(token) == 0 && board.get(MIDDLE).compareTo(clearToken) == 0 && board.get(DOWN_RIGHT).compareTo(token) == 0) {
 			return true;
 		}		
-		if ( board.get(UP_LEFT).compareTo(clearToken) == 0 &&	board.get(MIDDLE).compareTo(token) == 0 && board.get(DOWN_RIGHT).compareTo(token) == 0) {
+		if ( board.get(UP_LEFT).compareTo(clearToken) == 0 && board.get(MIDDLE).compareTo(token) == 0 && board.get(DOWN_RIGHT).compareTo(token) == 0) {
 			return true;
 		}
 		
@@ -359,10 +359,105 @@ public class Playboard {
 		}
 		if ( board.get(LEFT).compareTo(clearToken) == 0 && board.get(MIDDLE).compareTo(token) == 0 && board.get(RIGHT).compareTo(token) == 0) {
 			return true;
+		}		
+		return false;
+	}
+	
+	public boolean haveHalfLineWithFiend(String current_player_token, String fiend_token) {
+		
+		// 1
+		if ( board.get(UP).compareTo(current_player_token) == 0 && board.get(MIDDLE).compareTo(current_player_token) == 0 && board.get(DOWN).compareTo(fiend_token) == 0) {
+			return true;
+		}		
+		if ( board.get(UP).compareTo(current_player_token) == 0 && board.get(MIDDLE).compareTo(fiend_token) == 0 && board.get(DOWN).compareTo(current_player_token) == 0) {
+			return true;
+		}		
+		if ( board.get(UP).compareTo(fiend_token) == 0 && board.get(MIDDLE).compareTo(current_player_token) == 0 && board.get(DOWN).compareTo(current_player_token) == 0) {
+			return true;
 		}
 		
+		// 2
+		if ( board.get(UP_LEFT).compareTo(current_player_token) == 0 && board.get(MIDDLE).compareTo(current_player_token) == 0 && board.get(DOWN_RIGHT).compareTo(fiend_token) == 0) {
+			return true;
+		}		
+		if ( board.get(UP_LEFT).compareTo(current_player_token) == 0 && board.get(MIDDLE).compareTo(fiend_token) == 0 && board.get(DOWN_RIGHT).compareTo(current_player_token) == 0) {
+			return true;
+		}		
+		if ( board.get(UP_LEFT).compareTo(fiend_token) == 0 &&	board.get(MIDDLE).compareTo(current_player_token) == 0 && board.get(DOWN_RIGHT).compareTo(current_player_token) == 0) {
+			return true;
+		}
 		
+		// 3
+		if ( board.get(UP_RIGHT).compareTo(current_player_token) == 0 && board.get(MIDDLE).compareTo(current_player_token) == 0 && board.get(DOWN_LEFT).compareTo(fiend_token) == 0) {
+			return true;
+		}
+		if ( board.get(UP_RIGHT).compareTo(current_player_token) == 0 && board.get(MIDDLE).compareTo(fiend_token) == 0 && board.get(DOWN_LEFT).compareTo(current_player_token) == 0) {
+			return true;
+		}
+		if ( board.get(UP_RIGHT).compareTo(fiend_token) == 0 && board.get(MIDDLE).compareTo(current_player_token) == 0 && board.get(DOWN_LEFT).compareTo(current_player_token) == 0) {
+			return true;
+		}
+		
+		// 4
+		if ( board.get(LEFT).compareTo(current_player_token) == 0 && board.get(MIDDLE).compareTo(current_player_token) == 0 && board.get(RIGHT).compareTo(fiend_token) == 0) {
+			return true;
+		}
+		if ( board.get(LEFT).compareTo(current_player_token) == 0 && board.get(MIDDLE).compareTo(fiend_token) == 0 && board.get(RIGHT).compareTo(current_player_token) == 0) {
+			return true;
+		}
+		if ( board.get(LEFT).compareTo(fiend_token) == 0 && board.get(MIDDLE).compareTo(current_player_token) == 0 && board.get(RIGHT).compareTo(current_player_token) == 0) {
+			return true;
+		}		
 		return false;
+	}
+	
+	public int getClearTokenPositionInHalfLine(String token) {
+		
+		// 1
+		if ( board.get(UP).compareTo(token) == 0 && board.get(MIDDLE).compareTo(token) == 0 && board.get(DOWN).compareTo(clearToken) == 0) {
+			return DOWN;
+		}		
+		if ( board.get(UP).compareTo(token) == 0 && board.get(MIDDLE).compareTo(clearToken) == 0 && board.get(DOWN).compareTo(token) == 0) {
+			return MIDDLE;
+		}		
+		if ( board.get(UP).compareTo(clearToken) == 0 && board.get(MIDDLE).compareTo(token) == 0 && board.get(DOWN).compareTo(token) == 0) {
+			return UP;
+		}
+		
+		// 2
+		if ( board.get(UP_LEFT).compareTo(token) == 0 && board.get(MIDDLE).compareTo(token) == 0 && board.get(DOWN_RIGHT).compareTo(clearToken) == 0) {
+			return DOWN_RIGHT;
+		}		
+		if ( board.get(UP_LEFT).compareTo(token) == 0 && board.get(MIDDLE).compareTo(clearToken) == 0 && board.get(DOWN_RIGHT).compareTo(token) == 0) {
+			return MIDDLE;
+		}		
+		if ( board.get(UP_LEFT).compareTo(clearToken) == 0 &&	board.get(MIDDLE).compareTo(token) == 0 && board.get(DOWN_RIGHT).compareTo(token) == 0) {
+			return UP_LEFT;
+		}
+		
+		// 3
+		if ( board.get(UP_RIGHT).compareTo(token) == 0 && board.get(MIDDLE).compareTo(token) == 0 && board.get(DOWN_LEFT).compareTo(clearToken) == 0) {
+			return DOWN_LEFT;
+		}
+		if ( board.get(UP_RIGHT).compareTo(token) == 0 && board.get(MIDDLE).compareTo(clearToken) == 0 && board.get(DOWN_LEFT).compareTo(token) == 0) {
+			return MIDDLE;
+		}
+		if ( board.get(UP_RIGHT).compareTo(clearToken) == 0 && board.get(MIDDLE).compareTo(token) == 0 && board.get(DOWN_LEFT).compareTo(token) == 0) {
+			return UP_RIGHT;
+		}
+		
+		// 4
+		if ( board.get(LEFT).compareTo(token) == 0 && board.get(MIDDLE).compareTo(token) == 0 && board.get(RIGHT).compareTo(clearToken) == 0) {
+			return RIGHT;
+		}
+		if ( board.get(LEFT).compareTo(token) == 0 && board.get(MIDDLE).compareTo(clearToken) == 0 && board.get(RIGHT).compareTo(token) == 0) {
+			return MIDDLE;
+		}
+		if ( board.get(LEFT).compareTo(clearToken) == 0 && board.get(MIDDLE).compareTo(token) == 0 && board.get(RIGHT).compareTo(token) == 0) {
+			return LEFT;
+		}		
+		
+		return -1;
 	}
 	
 	/**

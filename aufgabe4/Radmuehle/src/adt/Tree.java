@@ -3,6 +3,7 @@ package adt;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import algorithm.Assessment;
@@ -83,8 +84,7 @@ public class Tree {
 		}
 		return maxDeep;
 	}
-	
-	
+
 	/**
 	 * Method get you all nodes in a deep
 	 * @param deep - deep of tree
@@ -363,6 +363,57 @@ public class Tree {
 		return null;
 	}
 	
+	public void printAllBestWays(int best) {
+		// take all leafs from tree
+		List<Node> leafs = getAllLeafs();
+		
+		List<Node> best_node_list = new ArrayList<Node>();
+		
+		// search here the best nodes
+		for (Node node : leafs) {
+			if ( node.getAssessment() == best ) {	
+				best_node_list.add(node);
+			}
+		}
+	
+		for (Node node : best_node_list) {
+			
+			// save running way from node
+			List<Node> running_way = getWayHelper(node);
+			
+			// set assess on next node step
+			setRightAssessOnNextNode(running_way);
+			
+//			System.err.println("----------------------------- Possible Way Start -----------------------------------");
+//			try {Thread.sleep(50);} catch (InterruptedException e) {e.printStackTrace();}
+//			System.out.println(running_way);
+//			try {Thread.sleep(50);} catch (InterruptedException e) {e.printStackTrace();}
+//			System.err.println("----------------------------- Possible Way End -----------------------------------\n");			
+		}
+	}
+	
+	
+	private void setRightAssessOnNextNode(List<Node> runnig_ways) {
+			
+		int sum = 0;
+		for (Node node : runnig_ways) {						
+			
+			if (node.getParentID() == 1) {
+				
+				if ( sum > node.getAssessment() ) {
+					node.setAssessment(sum);
+				}
+				
+				// leave the iteration
+				break;
+				
+			}						
+			sum += node.getAssessment();
+		}
+		
+	}
+	
+	
 	/**
 	 * Method give you the best step
 	 * the last elem in the list is the next best step!
@@ -384,6 +435,8 @@ public class Tree {
 				best_node_list.add(node);
 			}
 		}
+		
+		System.err.println("Best: \n" + best_node_list);
 		
 		//int shortest_node_id = 999_999_999;
 		// here we take the shortes way to the win
@@ -435,7 +488,7 @@ public class Tree {
 	 */
 	private List<Node> getWayHelper(Node node)  {
 		List<Node> result = new ArrayList<Node>();
-		getWayHelper2(node, result);		
+		getWayHelper2(node, result, 0);		
 		return result;		
 	}
 	
@@ -445,19 +498,170 @@ public class Tree {
 	 * @param result
 	 * @return
 	 */
-	private List<Node> getWayHelper2(Node node,  List<Node> result) {		
+	private List<Node> getWayHelper2(Node node,  List<Node> result, int assess_count) {		
 		if ( node.getParentID() == UNDEFINED ) {
 			result.add(node);
 			// recursion end
 			return result;
+			
 		} else {			
+			
+			// TODO:
+//			if (node.getParentID() == 1) {
+//				node.setAssessment(assess_count);
+//			}
+			
+			assess_count = assess_count + (node.getAssessment());
 			result.add(node);
-			getWayHelper2(getNode(node.getParentID()), result);
+			getWayHelper2(getNode(node.getParentID()), result, assess_count);
 		}		
 		return result;			
 	}
 	
+	/**
+	 * Heuristic meiner hat einen eigenen Nachbar!
+	 * @param node_list
+	 * @param current_player_token
+	 * @return
+	 */
+	public boolean neighborWasMyTokenHeuristic(List<Node> node_list, String current_player_token) {
+		for (Node node : node_list) {
+			
+			if (node.getPlayboard().getFreePositionCount() > 3) {
+				return false;
+			}
+		
+			List<Integer> node_positions = getMyTokenPositionsWithoutMiddle(node, current_player_token);
+			
+			for (Integer my_position : node_positions) {
+				
+				// have a self neighbor
+				if ( haveSelfNeighbor(node, my_position, current_player_token) ) {
+					System.out.println("neighborWasMyTokenHeuristic erkannt: " + node);
+					return true;					
+				}
+			}			
+		}
+		return false;
+	}
 	
+	/**
+	 * Heuristic: Meiner, hat keine Nachbarn! 
+	 * @param node_list
+	 * @param current_player_token
+	 * @return
+	 */
+	public boolean nonNeighborHeuristic(List<Node> node_list, String current_player_token) {
+		for (Node node : node_list) {
+			
+			if (node.getPlayboard().getFreePositionCount() > 3) {
+				return false;
+			}
+			
+			List<Integer> node_positions = getMyTokenPositionsWithoutMiddle(node, current_player_token);
+			
+			for (Integer my_position : node_positions) {
+				
+				// have he a neighbor?
+				if (haveClearNeighbors(node, my_position)) {
+					System.out.println("nonNeighborHeuristic: " + node);
+					return true;					
+				}
+			}
+		}		
+		return false;
+	}
+	
+	/**
+	 * Method give true, if neighbors from this position was clear, without the middle!!!
+	 * @param my_position
+	 * @return
+	 */
+	private boolean haveClearNeighbors(Node node, Integer my_position) {
+		
+		List<Integer> neighbors_with_middle = node.getPlayboard().getNeighbors(my_position);
+		List<Integer> neighbors_without_middle = new ArrayList<>();
+		
+		// filter
+		for (Integer pos : neighbors_with_middle) {
+			if  (pos != node.getPlayboard().getMIDDLE() ) {
+				neighbors_without_middle.add(pos);
+			}
+		}
+		
+		int clear_count = 0;
+		for (Integer pos : neighbors_without_middle) {
+			if (node.getPlayboard().getStruct().get(pos) == "clear" ) {
+				clear_count++;
+			}
+		}
+		
+		if (clear_count > 1) {
+			return true;
+		}
+		return false;
+	}
+	
+	private boolean haveSelfNeighbor(Node node, Integer my_position, String current_player_token) {
+		
+		List<Integer> neighbors_with_middle = node.getPlayboard().getNeighbors(my_position);
+		List<Integer> neighbors_without_middle = new ArrayList<>();
+		
+		// filter
+		for (Integer pos : neighbors_with_middle) {
+			if  (pos != node.getPlayboard().getMIDDLE() ) {
+				neighbors_without_middle.add(pos);
+			}
+		}
+		
+		for (Integer pos : neighbors_without_middle) {
+			if (node.getPlayboard().getStruct().get(pos) == current_player_token ) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+
+/**
+ * Method give you token positions without the middle
+ * @param node_list
+ * @param current_player_token
+ * @return
+ */
+	private List<Integer> getMyTokenPositionsWithoutMiddle(Node node, String current_player_token) {
+		List<Integer> my_positions = new ArrayList<>();
+		
+		for(Map.Entry<Integer, String> map : node.getPlayboard().getStruct().entrySet()) {
+			// jump over the middle
+			if (map.getKey() == 9) {
+				continue;
+			}
+			if (map.getValue() == current_player_token) {
+				my_positions.add(map.getKey());
+			}
+		}
+		return my_positions;
+	}
+	
+	public Node getMaxAssessmentNode(List<Node> node_list) {
+		Node node = null;
+		
+		List<Integer> max_assmentList = new ArrayList<>();
+		for (Node current_node : node_list) {
+			max_assmentList.add(current_node.getAssessment());			
+		}
+		
+		int max_assment = Collections.max(max_assmentList);
+		
+		for (Node current_node : node_list) {
+			if (current_node.getAssessment() == max_assment) {
+				node = current_node;
+			}
+		}
+		
+		return node;
+	}
 	
 	public static void main(String[] args) {
 		Tree tree = new Tree();		
@@ -466,36 +670,36 @@ public class Tree {
 		Playboard board = new Playboard();
 		board.initializeBoard();
 		
-		board.addToken("Red", 8);
-		board.addToken("Blue", 9);
+		board.addToken("Red", 9);
+		board.addToken("Blue", 7);
 		
-		board.addToken("Red", 7);
-		
+		board.addToken("Red", 8);		
 		board.addToken("Blue", 5);
 		
-		board.addToken("Red", 4);
+		board.addToken("Red", 3);
+		board.addToken("Blue", 4);
 		
 
 	
 		Minimax minimax = new Minimax(tree);
 		
-		List<Node> n = tree.generateTree(board ,7, "Blue");
+		List<Node> n = tree.generateTree(board ,9, "Blue");
 		int access = minimax.maxAB(tree.getNode(1), tree.getNode(1).getAlpha(), tree.getNode(1).getBeta(), "Blue");	
 		
 		System.out.println(tree.getStruct());
 		
 		System.out.println("access: " + access);
 		
-		System.out.println(tree.printNextBestStep(access));;
+		System.out.println(tree.printNextBestStep(access));
 		
 		
 //		System.out.println(tree.getStruct());		
 		//System.err.println(tree.getAllLeafs());
 
 		Node node = tree.printNextBestStep(access);
-		//System.out.println(node);
+		System.err.println("node:" + node);
 		
-		//System.out.println(assesment.looseInAStepHeuristic(node, "Red"));
+		System.out.println(tree.getMyTokenPositionsWithoutMiddle(node, "Blue"));
 		
 //		System.err.println("Leaf size: " + tree.getAllLeafs().size());
 //		System.out.println("access: ---    " + access);

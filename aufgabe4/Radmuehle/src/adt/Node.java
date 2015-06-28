@@ -22,6 +22,7 @@ public class Node {
 	private int beta = 999_999_999;	
 	private int assessment = 0;
 	private int best = 0;
+	private String message = "";
 	
 	private Playboard board;
 	
@@ -35,6 +36,10 @@ public class Node {
 	
 	public int getBest() {
 		return best;
+	}
+	
+	public void setMesseage(String message) {
+		this.message = message;
 	}
 	
 	public void setBest(int best) {
@@ -183,7 +188,7 @@ public class Node {
 		if ( board_position == undefined) {
 			return  " [ID: " + id + ", ParentID: Root" + ", Deep: " + deep + ", Children_IDs: " + getChildren() +  ", BoardPosition: Undefine]" + ", Best: " + getBest() + ", Assessment: " + getAssessment() + ", Playboard: " + getPlayboard() +  "\n" ;
 		}
-		return " [ID: " + id + ", ParentID: " + parent_id + ", Deep: " + deep + ", Children_IDs: " + getChildren() + ", BoardPosition: " + board_position + "]" + ", Best: " + getBest() + ", Assessment: " + getAssessment() +  ", Playboard: " + getPlayboard() + "\n";		
+		return " [ID: " + id + ", ParentID: " + parent_id + ", Deep: " + deep + ", Children_IDs: " + getChildren() + ", BoardPosition: " + board_position + "]" + ", Best: " + getBest() + ", Assessment: " + getAssessment() +  ", Playboard: " + getPlayboard() + ", message: " + message +  "\n";		
 	}
 	
 	/**

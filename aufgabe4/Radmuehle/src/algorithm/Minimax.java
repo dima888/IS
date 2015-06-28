@@ -29,8 +29,8 @@ public class Minimax {
 	private Assessment assesment = new Assessment();
 	private Tree tree;
 	
-	int infinity_max = 1;
-	int infinity_min = -1;
+	int infinity_max = 9999999;
+	int infinity_min = -999999;
 	
 	public Minimax(Tree tree) {
 		this.tree = tree;
