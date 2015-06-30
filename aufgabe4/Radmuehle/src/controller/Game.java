@@ -4,14 +4,13 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.JButton;
-import javax.swing.event.EventListenerList;
 
 import view.PlayboardView;
 import adt.Node;
 import adt.Tree;
+import algorithm.Assessment;
 import algorithm.Minimax;
 import model.Playboard;
 
@@ -49,38 +48,16 @@ public class Game {
 	
 	Bot bot;
 	
-
-	boolean bot_1 = false;
-	boolean bot_2 = true;
+	private boolean bot_1 = true;
+	private boolean bot_2 = false;
 	
 	List<JButton> jButtonList = new ArrayList<JButton>();
 	private PlayboardView view;
 	
 	public Game(String player_1_color, String player_2_color) {		
-		
-		board = new Playboard();
-		board.initializeBoard();
-						
-		tree = new Tree();
-		minimax = new Minimax(tree);		
-		
-		initializeView();
-		
-		bot = new Bot(view);
-		
-
-				
-		// player 1
-		if (getCurrentPlayerMoveToken()) {						
-			giveTip("Red", bot_1);
-		} else {
-			// player 2
-			giveTip("Blue", bot_2);
-		}		
-		
-	
+		initializeGame();	
 	}
-	
+
 	private void initializeView() {
 		view = new PlayboardView(this);
 		view.setVisible(true);				
@@ -188,57 +165,24 @@ public class Game {
 			tree.generateTree(board, deep, player);	
 			minimax.setTree(tree);						
 			best_assessment = minimax.maxAB(tree.getNode(1), tree.getNode(1).getAlpha(), tree.getNode(1).getBeta(), player);
-			
-//			System.out.println(tree.getStruct());
-			
 
-			
 			System.out.println("Beste bewertung: " + best_assessment);
-			//System.err.println(tree.getAllLeafs());
 									
-			try {			
-					
-//				futureNode = tree.printNextBestStep(best_assessment);
-//				tree.printNextBestStep(best_assessment);
+			try {	
 				
-				
-//				System.out.println(futureNode);
-								
-			
-				// heuristiken erst dann spielen lassen, wenn alle token gelegt wurden
-				if (setTokenLimit <1) {
-					
-//					List<Node> allowedNodeList = new ArrayList<>();
-					
-					for (Node node : tree.getNodes(2)) {
-						
-						if (tree.neighborWasMyTokenHeuristic(new ArrayList<>(Arrays.asList(node)), player) ) {
-							//continue;
-							node.setAssessment(node.getAssessment() - 200);
-						}
-//						
-						if (tree.nonNeighborHeuristic(new ArrayList<>(Arrays.asList(node)), player) ) {
-							node.setAssessment(node.getAssessment() - 250);
-						}	
-						
-//						allowedNodeList.add(node);						
+				System.err.println("token limit : " + setTokenLimit);
+				for (Node node : tree.getNodes(2)) {										 
+					if (tree.neighborWasMyTokenHeuristic(new ArrayList<>(Arrays.asList(node)), player) ) {
+						node.setAssessment(node.getAssessment() - 260);
 					}
-				
-//					try {Thread.sleep(50);} catch (InterruptedException e1) {e1.printStackTrace();}
-//					System.err.println("Gefilterne Wege");
-//					try {Thread.sleep(50);} catch (InterruptedException e1) {e1.printStackTrace();}
-//					System.out.println(allowedNodeList);										
-//					try {Thread.sleep(50);} catch (InterruptedException e1) {e1.printStackTrace();}
-					
-					
-//					if ( !allowedNodeList.isEmpty() ) {
-//						futureNode = tree.getMaxAssessmentNode(tree.getNodes(2));
-//					}
-					
-					
-				}
 							
-				//tree.printAllBestWays(best_assessment);
+					if (tree.nonNeighborHeuristic(new ArrayList<>(Arrays.asList(node)), player) ) {
+						node.setAssessment(node.getAssessment() - 250);
+					}
+							
+
+				}
+				
 				futureNode = tree.getMaxAssessmentNode(tree.getNodes(2));
 				tree.printNextBestStep(futureNode.getAssessment());
 				
@@ -397,14 +341,33 @@ public class Game {
 	}
 	
 	/**
-	 * Getter for playboard
-	 * @return
+	 * Here was initialize the game
 	 */
-	public Map getPlayboard() {
-		return board.getStruct();
+	private void initializeGame() {
+		if (bot_1) {
+			Assessment.loose_value = -145;
+		}
+		
+		board = new Playboard();
+		board.initializeBoard();
+						
+		tree = new Tree();
+		minimax = new Minimax(tree);		
+		
+		initializeView();
+		
+		bot = new Bot(view);
+			
+		// player 1
+		if (getCurrentPlayerMoveToken()) {						
+			giveTip("Red", bot_1);
+		} else {
+			// player 2
+			giveTip("Blue", bot_2);
+		}
 	}
 	
 	public static void main(String[] args) {
-		Game g = new Game("Red", "Blue");
+		new Game("Red", "Blue");
 	}
 }

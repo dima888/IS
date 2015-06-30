@@ -5,9 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import algorithm.Assessment;
-import algorithm.Minimax;
 import model.Playboard;
 
 /**
@@ -28,10 +25,6 @@ public class Tree {
 	private final int UNDEFINED  = 77777777;		
 	
 	private Node root_node = null;
-	
-	private final int BEST = 1000;
-	
-	private final int ROOT_ID = 1;
 	
 	// deepest node a our tree
 	Node deepestNode = null;
@@ -376,8 +369,7 @@ public class Tree {
 			}
 		}
 	
-		for (Node node : best_node_list) {
-			
+		for (Node node : best_node_list) {			
 			// save running way from node
 			List<Node> running_way = getWayHelper(node);
 			
@@ -392,9 +384,7 @@ public class Tree {
 		}
 	}
 	
-	
-	private void setRightAssessOnNextNode(List<Node> runnig_ways) {
-			
+	private void setRightAssessOnNextNode(List<Node> runnig_ways) {			
 		int sum = 0;
 		for (Node node : runnig_ways) {						
 			
@@ -405,14 +395,11 @@ public class Tree {
 				}
 				
 				// leave the iteration
-				break;
-				
+				break;				
 			}						
 			sum += node.getAssessment();
 		}
-		
 	}
-	
 	
 	/**
 	 * Method give you the best step
@@ -435,32 +422,7 @@ public class Tree {
 				best_node_list.add(node);
 			}
 		}
-		
-		System.err.println("Best: \n" + best_node_list);
-		
-		//int shortest_node_id = 999_999_999;
-		// here we take the shortes way to the win
-//		for (Node node : best_node_list) {
-//			int current_node_id = node.getID(); 
-//			if (current_node_id < shortest_node_id) {
-//				shortest_node_id = current_node_id;
-//			}
-//		}
-		
-		//System.err.println(best_node_list);
-		//System.out.println("best leaf size: " + best_node_list.size());
-		
-		// TODO: Experements
-		
-		// shortest win situation
-		//best_node = getNode(shortest_node_id);
-		
-		// TODO: verhindert sieg
-		// longest win situationn		
-		best_node = best_node_list.get(best_node_list.size() -1);
-		
-		// TODO: verhindert niederlage
-		//best_node = best_node_list.get(0);
+		//System.err.println("Best: \n" + best_node_list);
 		
 		// save here the best way
 		return getWayHelper(best_node);	
@@ -505,12 +467,6 @@ public class Tree {
 			return result;
 			
 		} else {			
-			
-			// TODO:
-//			if (node.getParentID() == 1) {
-//				node.setAssessment(assess_count);
-//			}
-			
 			assess_count = assess_count + (node.getAssessment());
 			result.add(node);
 			getWayHelper2(getNode(node.getParentID()), result, assess_count);
@@ -644,6 +600,7 @@ public class Tree {
 		return my_positions;
 	}
 	
+	
 	public Node getMaxAssessmentNode(List<Node> node_list) {
 		Node node = null;
 		
@@ -662,58 +619,9 @@ public class Tree {
 		
 		return node;
 	}
-	
-	public static void main(String[] args) {
-		Tree tree = new Tree();		
-		Assessment assesment = new Assessment();
-		
-		Playboard board = new Playboard();
-		board.initializeBoard();
-		
-		board.addToken("Red", 9);
-		board.addToken("Blue", 7);
-		
-		board.addToken("Red", 8);		
-		board.addToken("Blue", 5);
-		
-		board.addToken("Red", 3);
-		board.addToken("Blue", 4);
-		
-
-	
-		Minimax minimax = new Minimax(tree);
-		
-		List<Node> n = tree.generateTree(board ,9, "Blue");
-		int access = minimax.maxAB(tree.getNode(1), tree.getNode(1).getAlpha(), tree.getNode(1).getBeta(), "Blue");	
-		
-		System.out.println(tree.getStruct());
-		
-		System.out.println("access: " + access);
-		
-		System.out.println(tree.printNextBestStep(access));
-		
-		
-//		System.out.println(tree.getStruct());		
-		//System.err.println(tree.getAllLeafs());
-
-		Node node = tree.printNextBestStep(access);
-		System.err.println("node:" + node);
-		
-		System.out.println(tree.getMyTokenPositionsWithoutMiddle(node, "Blue"));
-		
-//		System.err.println("Leaf size: " + tree.getAllLeafs().size());
-//		System.out.println("access: ---    " + access);
-	}
 }
 
 
-
-
-
-
-
-
-//[ID: 3, ParentID: 1, Deep: 2, Children_IDs: [10, 11, 12, 13], BoardPosition: 6], Best: 0, Assessment: 0, Playboard: {1=Blue, 2=Blue, 3=clear, 4=Red, 5=Red, 6=Blue, 7=clear, 8=clear, 9=Red}
 
 
 

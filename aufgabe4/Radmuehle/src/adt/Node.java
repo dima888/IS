@@ -201,21 +201,9 @@ public class Node {
 	 * @return boolean
 	 */
 	public boolean isLeaf() {
-		
-//		if (getChildren().isEmpty()) {
-//			return true;
-//		}		
-//		if (this.getPlayboard().haveLine("Red")) {
-//			return true;
-//		}
-//		if (this.getPlayboard().haveLine("Blue")) {
-//			return true;
-//		}
-		
 		if (getID() != 1) {
 			return true;
 		}
-		
 		return false;
 	}
 	
